@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "417581692669",
+    "project_id": "bookfinder-f2915",
+    "storage_bucket": "bookfinder-f2915.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417581692669:android:536690b3b9646be5027094",
+        "android_client_info": {
+          "package_name": "com.example.book_finder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeDRGgZ4tuwqxPPcAMQYQLbFRoNLOpKF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
