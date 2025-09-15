@@ -62,6 +62,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       color: Colors.black,
                       fontSize: 16,
                       fontFamily: "Cinzel",
+                      fontWeight: FontWeight.bold
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -71,7 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: fullNameController,
                     decoration: InputDecoration(
                       labelText: "Full Name",
-                      labelStyle: const TextStyle(fontFamily: "Cinzel"),
+                      
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -84,7 +85,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: usernameController,
                     decoration: InputDecoration(
                       labelText: "Username",
-                      labelStyle: const TextStyle(fontFamily: "Cinzel"),
+                    
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -98,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: "Email",
-                      labelStyle: const TextStyle(fontFamily: "Cinzel"),
+                     
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -112,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscureText: obscurePassword,
                     decoration: InputDecoration(
                       labelText: "Password",
-                      labelStyle: const TextStyle(fontFamily: "Cinzel"),
+                      
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -139,10 +140,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscureText: obscureConfirmPassword,
                     decoration: InputDecoration(
                       labelText: "Confirm Password",
-                      labelStyle: const TextStyle(fontFamily: "Cinzel"),
+                      
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      
                       suffixIcon: IconButton(
                         icon: Icon(
                           obscureConfirmPassword
