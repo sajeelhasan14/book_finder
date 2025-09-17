@@ -1,7 +1,11 @@
+import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/screens/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';   
+
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,8 +21,15 @@ class MyApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,home: const SignUpScreen(),);
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SignupScreenProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: const SignUpScreen(),
+      ),
+    );
   }
 }
 

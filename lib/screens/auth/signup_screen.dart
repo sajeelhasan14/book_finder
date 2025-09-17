@@ -1,4 +1,7 @@
+import 'package:book_finder/providers/signup_screen_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,8 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  bool obscurePassword = true;
-  bool obscureConfirmPassword = true;
+FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -56,109 +58,119 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                   Text(
+                  Text(
                     "Sign up to get started",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
                       fontFamily: "Cinzel",
-                      fontWeight: FontWeight.bold
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 40),
 
                   /// Full Name
-                  TextFormField(
+                  TextFormFieldWidget(
+                    labelText: " Full Name",
                     controller: fullNameController,
-                    decoration: InputDecoration(
-                      labelText: "Full Name",
-                      
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    validator: (value) =>
+                        value!.isEmpty ? "Full name is required" : null,
                   ),
                   const SizedBox(height: 20),
 
                   /// Username
-                  TextFormField(
+                  TextFormFieldWidget(
+                    labelText: "Username",
                     controller: usernameController,
-                    decoration: InputDecoration(
-                      labelText: "Username",
-                    
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    validator: (value) =>
+                        value!.isEmpty ? "Username is required" : null,
                   ),
                   const SizedBox(height: 20),
 
                   /// Email
-                  TextFormField(
+                  TextFormFieldWidget(
+                    labelText: "Email",
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: "Email",
-                     
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Email is required";
+                      }
+                      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                      if (!emailRegex.hasMatch(value)) {
+                        return "Enter a valid email";
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
 
                   /// Password
-                  TextFormField(
+                  TextFormFieldWidget(
+                    labelText: "Password",
                     controller: passwordController,
-                    obscureText: obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: "Password",
-                      
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            obscurePassword = !obscurePassword;
-                          });
-                        },
+                    obscurePassword: Provider.of<SignupScreenProvider>(
+                      context,
+                    ).obscurePassword,
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        Provider.of<SignupScreenProvider>(
+                          context,
+                          listen: false,
+                        ).toggleObscurePassword();
+                      },
+                      icon: Icon(
+                        Provider.of<SignupScreenProvider>(
+                              context,
+                            ).obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
                       ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Password is required";
+                      } else if (value.length < 6) {
+                        return "Password must be at least 6 characters";
+                      }
+                      return null;
+                    },
                   ),
+
                   const SizedBox(height: 20),
 
                   /// Confirm Password
-                  TextFormField(
+                  TextFormFieldWidget(
+                    labelText: "Confirm Password",
                     controller: confirmPasswordController,
-                    obscureText: obscureConfirmPassword,
-                    decoration: InputDecoration(
-                      labelText: "Confirm Password",
-                      
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscureConfirmPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            obscureConfirmPassword = !obscureConfirmPassword;
-                          });
-                        },
+                    obscurePassword: Provider.of<SignupScreenProvider>(
+                      context,
+                    ).obscureConfirmPassword,
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        Provider.of<SignupScreenProvider>(
+                          context,
+                          listen: false,
+                        ).toggleObscureConfirmPassword();
+                      },
+                      icon: Icon(
+                        Provider.of<SignupScreenProvider>(
+                              context,
+                            ).obscureConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
                       ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Password confirmation is required";
+                      } else if (value != passwordController.text) {
+                        return "Passwords do not match";
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 30),
 
@@ -174,11 +186,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Sign Up button pressed"),
-                          ),
-                        );
+                        if (_formKey.currentState!.validate()) {
+                          auth.createUserWithEmailAndPassword(
+                            
+                            email: emailController.text,
+
+                            password: passwordController.text,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              elevation: 50,
+                              backgroundColor: Colors.green,
+                              content: Text("Signed up successfully!"),
+                            ),
+                          );
+                        }
                       },
                       child: const Text(
                         "Sign Up",
@@ -216,6 +238,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class TextFormFieldWidget extends StatelessWidget {
+  final TextEditingController controller;
+  final String labelText;
+  final bool? obscurePassword;
+  final TextInputType? keyboardType;
+  final Widget? suffixIcon;
+  final String? Function(String?)? validator;
+
+  const TextFormFieldWidget({
+    required this.labelText,
+    required this.controller,
+    this.validator,
+    this.keyboardType,
+    this.obscurePassword,
+    this.suffixIcon,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscurePassword ?? false,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        suffixIcon: suffixIcon,
+      ),
+      validator: validator,
     );
   }
 }
