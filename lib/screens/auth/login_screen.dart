@@ -1,27 +1,21 @@
 import 'package:book_finder/providers/signup_screen_provider.dart';
-import 'package:book_finder/screens/auth/login_screen.dart';
+import 'package:book_finder/screens/auth/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController fullNameController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-
   FirebaseAuth auth = FirebaseAuth.instance;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,24 +63,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
-
-                  /// Full Name
-                  TextFormFieldWidget(
-                    labelText: " Full Name",
-                    controller: fullNameController,
-                    validator: (value) =>
-                        value!.isEmpty ? "Full name is required" : null,
-                  ),
-                  const SizedBox(height: 20),
-
-                  /// Username
-                  TextFormFieldWidget(
-                    labelText: "Username",
-                    controller: usernameController,
-                    validator: (value) =>
-                        value!.isEmpty ? "Username is required" : null,
-                  ),
-                  const SizedBox(height: 20),
 
                   /// Email
                   TextFormFieldWidget(
@@ -139,43 +115,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
 
-                  const SizedBox(height: 20),
-
-                  /// Confirm Password
-                  TextFormFieldWidget(
-                    labelText: "Confirm Password",
-                    controller: confirmPasswordController,
-                    obscurePassword: Provider.of<SignupScreenProvider>(
-                      context,
-                    ).obscureConfirmPassword,
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        Provider.of<SignupScreenProvider>(
-                          context,
-                          listen: false,
-                        ).toggleObscureConfirmPassword();
-                      },
-                      icon: Icon(
-                        Provider.of<SignupScreenProvider>(
-                              context,
-                            ).obscureConfirmPassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Password confirmation is required";
-                      } else if (value != passwordController.text) {
-                        return "Passwords do not match";
-                      }
-                      return null;
-                    },
-                  ),
                   const SizedBox(height: 30),
 
-                  /// Sign Up Button
+                  /// Login Button
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -188,21 +130,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          auth.createUserWithEmailAndPassword(
+                          auth.signInWithEmailAndPassword(
                             email: emailController.text,
                             password: passwordController.text,
-                          );
+                          ).then((value) {
+                            Navigator.pop(context);
+                          }).onError((error, stackTrace) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                elevation: 50,
+                                backgroundColor: Colors.red,
+                                content: Text(error.toString()),
+                              ),
+                            );
+                          });
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               elevation: 50,
                               backgroundColor: Colors.green,
-                              content: Text("Signed up successfully!"),
+                              content: Text("Logged in successfully!"),
                             ),
                           );
                         }
                       },
                       child: const Text(
-                        "Sign Up",
+                        "Login",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -222,12 +174,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
+                            builder: (context) => const SignUpScreen(),
                           ),
                         );
                       },
                       child: const Text(
-                        "Already have an account? Login",
+                        "Don't have an account? Sign Up",
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
