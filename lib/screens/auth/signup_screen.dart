@@ -196,7 +196,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             auth.createUserWithEmailAndPassword(
                               email: emailController.text,
                               password: passwordController.text,
-                            );
+                            ).then((value) => {
+                              Provider.of<SignupScreenProvider>(
+                              context,
+                              listen: false,
+                            ).isLoading = false
+                            });
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 elevation: 50,
