@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SignupScreenProvider extends ChangeNotifier {
+  bool isLoading = false;
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
 

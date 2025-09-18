@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: const Text(
-          "Sign Up",
+          "Login",
           style: TextStyle(
             color: Colors.white,
             fontFamily: "Cinzel",
@@ -130,6 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          Provider.of<SignupScreenProvider>(context, listen: false).isLoading = true;
                           auth.signInWithEmailAndPassword(
                             email: emailController.text,
                             password: passwordController.text,
@@ -153,15 +154,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         }
                       },
-                      child: const Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Cinzel",
-                        ),
-                      ),
+                      child: Provider.of<SignupScreenProvider>(context).isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : const Text(
+                              "Login",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontFamily: "Cinzel",
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
 
