@@ -1,4 +1,5 @@
 import 'package:book_finder/providers/signup_screen_provider.dart';
+import 'package:book_finder/screens/auth/login_screen.dart';
 import 'package:book_finder/screens/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

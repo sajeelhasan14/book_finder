@@ -1,5 +1,6 @@
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/screens/auth/signup_screen.dart';
+import 'package:book_finder/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   /// Title
                   const Text(
-                    "Create Account",
+                    "Welcome Back",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 28,
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    "Sign up to get started",
+                    "Login to your account",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -130,34 +131,52 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          Provider.of<SignupScreenProvider>(context, listen: false).isLoading = true;
-                          auth.signInWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passwordController.text,
-                          ).then((value) {
-                            Navigator.pop(context);
-                          }).onError((error, stackTrace) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                elevation: 50,
-                                backgroundColor: Colors.red,
-                                content: Text(error.toString()),
-                              ),
-                            );
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              elevation: 50,
-                              backgroundColor: Colors.green,
-                              content: Text("Logged in successfully!"),
-                            ),
-                          );
+                          Provider.of<SignupScreenProvider>(
+                            context,
+                            listen: false,
+                          ).setLoading(true);
+                          auth
+                              .signInWithEmailAndPassword(
+                                email: emailController.text,
+                                password: passwordController.text,
+                              )
+                              .then((value) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    elevation: 50,
+                                    backgroundColor: Colors.green,
+                                    content: Text("Logged in successfully!"),
+                                  ),
+                                );
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const HomeScreen(),
+                                  ),
+                                );
+                                Provider.of<SignupScreenProvider>(
+                                  context,
+                                  listen: false,
+                                ).setLoading(false);
+                              })
+                              .onError((error, stackTrace) {
+                                Provider.of<SignupScreenProvider>(
+                                  context,
+                                  listen: false,
+                                ).setLoading(false);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    elevation: 50,
+                                    backgroundColor: Colors.red,
+                                    content: Text(error.toString()),
+                                  ),
+                                );
+                              });
                         }
                       },
-                      child: Provider.of<SignupScreenProvider>(context).isLoading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
+                      child:
+                          Provider.of<SignupScreenProvider>(context).isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
                           : const Text(
                               "Login",
                               style: TextStyle(
