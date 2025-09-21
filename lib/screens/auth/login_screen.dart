@@ -137,8 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ).setLoading(true);
                           auth
                               .signInWithEmailAndPassword(
-                                email: emailController.text,
-                                password: passwordController.text,
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
                               )
                               .then((value) {
                                 ScaffoldMessenger.of(context).showSnackBar(
