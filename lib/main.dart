@@ -1,5 +1,6 @@
 import 'package:book_finder/providers/auth_provider.dart';
 import 'package:book_finder/providers/author_provider.dart';
+import 'package:book_finder/providers/book_provider.dart';
 import 'package:book_finder/providers/editions_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/providers/search_provider.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SignupScreenProvider()),
         ChangeNotifierProvider(create: (_) => SubjectProvider()),
         ChangeNotifierProvider(create: (_) => WorkDetailProvider()),
+        ChangeNotifierProvider(create: (_) => BookProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

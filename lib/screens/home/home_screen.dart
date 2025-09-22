@@ -1,7 +1,10 @@
+import 'package:book_finder/providers/book_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/providers/auth_provider.dart';
 import 'package:book_finder/providers/subject_provider.dart';
+import 'package:book_finder/screens/home/more_books_screen.dart';
 import 'package:book_finder/screens/search/search_screen.dart';
+import 'package:book_finder/services/open_library_api.dart';
 import 'package:book_finder/widgets/subject_chip.dart';
 import 'package:book_finder/widgets/book_card.dart';
 import 'package:flutter/material.dart';
@@ -112,73 +115,170 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
 
             /// 🔥 Trending header row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Trending",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+            // Trending Section
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    const Text(
+      'Trending Books',
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+    TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const MoreBooksScreen(type: 'trending'),
+          ),
+        );
+      },
+      child: const Text("More"),
+    ),
+  ],
+),
+
+SizedBox(
+  height: 220,
+  child: Consumer<BookProvider>(
+    builder: (context, prov, _) {
+      if (prov.trending.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: prov.trending.length,
+        itemBuilder: (context, idx) {
+          final book = prov.trending[idx];
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: SizedBox(
+              width: 140,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Cover
+                  book.coverId != null
+                      ? Image.network(
+                          OpenLibraryApi.getCoverUrl(book.coverId!, size: "M"),
+                          width: 120,
+                          height: 160,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: 120,
+                          height: 160,
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.book, size: 50),
+                        ),
+                  const SizedBox(height: 6),
+                  // Title
+                  Text(
+                    book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 14),
                   ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            SearchScreen(initialQuery: 'trending'),
-                      ),
-                    );
-                  },
-                  child: const Text("More >"),
-                ),
-              ],
-            ),
-
-            /// 🔥 Trending Books List
-            SizedBox(
-              height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 5, // Replace with trending.length
-                itemBuilder: (context, index) {
-                  return BookCard(
-                    title: "Trending Book ${index + 1}",
-                    author: "Author $index",
-                    coverUrl: null,
-                  );
-                },
+                  // Authors
+                  Text(
+                    book.authors.isNotEmpty ? book.authors.join(', ') : 'Unknown',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
               ),
             ),
+          );
+        },
+      );
+    },
+  ),
+),
 
-            const SizedBox(height: 24),
+const SizedBox(height: 16),
 
-            /// 🆕 Recently Added header
-            const Text(
-              "Recently Added",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+// Recently Added Section
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    const Text(
+      'Recently Added',
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+    TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const MoreBooksScreen(type: 'recent'),
+          ),
+        );
+      },
+      child: const Text("More"),
+    ),
+  ],
+),
+
+SizedBox(
+  height: 220,
+  child: Consumer<BookProvider>(
+    builder: (context, prov, _) {
+      if (prov.recent.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: prov.recent.length,
+        itemBuilder: (context, idx) {
+          final book = prov.recent[idx];
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: SizedBox(
+              width: 140,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Cover
+                  book.coverId != null
+                      ? Image.network(
+                          OpenLibraryApi.getCoverUrl(book.coverId!, size: "M"),
+                          width: 120,
+                          height: 160,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: 120,
+                          height: 160,
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.book, size: 50),
+                        ),
+                  const SizedBox(height: 6),
+                  // Title
+                  Text(
+                    book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  // Authors
+                  Text(
+                    book.authors.isNotEmpty ? book.authors.join(', ') : 'Unknown',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
               ),
             ),
+          );
+        },
+      );
+    },
+  ),
+),
 
-            /// 🆕 Recently Added Books List
-            SizedBox(
-              height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 5, // Replace with recent.length
-                itemBuilder: (context, index) {
-                  return BookCard(
-                    title: "Recent Book ${index + 1}",
-                    author: "Author $index",
-                    coverUrl: null,
-                  );
-                },
-              ),
-            ),
 
             const SizedBox(height: 24),
 
