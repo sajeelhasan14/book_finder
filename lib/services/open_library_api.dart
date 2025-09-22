@@ -17,9 +17,11 @@ class OpenLibraryApi {
   }
 
   // 📖 WORK DETAILS
-  static Future<Response?> getWork(String workId) {
-    return DioClient.get(ApiService.workDetails(workId));
-  }
+  static Future<Response> getWork(String workId) async {
+  final resp = await DioClient.get(ApiService.workDetails(workId));
+  if (resp == null) throw Exception("No response from getWork($workId)");
+  return resp;
+}
 
   // 📚 EDITIONS
   static Future<Response?> getEditions(

@@ -189,49 +189,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                             Provider.of<SignupScreenProvider>(
-                                  context,
-                                  listen: false,
-                                ).setLoading(true);
-                            auth.createUserWithEmailAndPassword(
-                              email: emailController.text.trim(),
-                              password: passwordController.text.trim(),
-                            ).then((value) {
-                              Provider.of<SignupScreenProvider>(
-                                  context,
-                                  listen: false,
-                                ).setLoading(false);
-                                 ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                elevation: 50,
-                                backgroundColor: Colors.green,
-                                content: Text("Signed up successfully!"),
-                              ),
-                            );
-                            }).onError((error,stackTrace){String message = "Signup failed!";
-  if (error is FirebaseAuthException) {
-    if (error.code == 'email-already-in-use') {
-      message = "This email is already in use.";
-    } else if (error.code == 'weak-password') {
-      message = "Password is too weak.";
-    }
-  }
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  elevation: 50,
-                                  backgroundColor: Colors.red,
-                                  content: Text(message),
-                                ),
-                              );
-                               Provider.of<SignupScreenProvider>(
-                                  context,
-                                  listen: false,
-                                ).setLoading(false);
-                            
-
-
-                            });
-                           
+                            Provider.of<SignupScreenProvider>(
+                              context,
+                              listen: false,
+                            ).setLoading(true);
+                            auth
+                                .createUserWithEmailAndPassword(
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                )
+                                .then((value) {
+                                  Provider.of<SignupScreenProvider>(
+                                    context,
+                                    listen: false,
+                                  ).setLoading(false);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      elevation: 50,
+                                      backgroundColor: Colors.green,
+                                      content: Text("Signed up successfully!"),
+                                    ),
+                                  );
+                                })
+                                .onError((error, stackTrace) {
+                                  String message = "Signup failed!";
+                                  if (error is FirebaseAuthException) {
+                                    if (error.code == 'email-already-in-use') {
+                                      message = "This email is already in use.";
+                                    } else if (error.code == 'weak-password') {
+                                      message = "Password is too weak.";
+                                    }
+                                  }
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      elevation: 50,
+                                      backgroundColor: Colors.red,
+                                      content: Text(message),
+                                    ),
+                                  );
+                                  Provider.of<SignupScreenProvider>(
+                                    context,
+                                    listen: false,
+                                  ).setLoading(false);
+                                });
                           }
                         },
                         child:
