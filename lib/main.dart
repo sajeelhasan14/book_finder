@@ -7,7 +7,6 @@ import 'package:book_finder/providers/settings_provider.dart';
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/providers/subject_provider.dart';
 import 'package:book_finder/providers/work_detail_provider.dart';
-
 import 'package:book_finder/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AuthorProvider()),
         ChangeNotifierProvider(create: (_) => EditionsProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),

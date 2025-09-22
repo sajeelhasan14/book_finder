@@ -8,7 +8,7 @@ class FavoritesProvider extends ChangeNotifier {
   final FavoritesRepository _repo = FavoritesRepository();
   List<Map<String, dynamic>> favorites = [];
   String? uid;
-  Stream? _subscription;
+  Stream? subscription;
 
   /// Update favorites when auth state changes
   void updateForAuth(AuthProvider auth) {
@@ -19,7 +19,7 @@ class FavoritesProvider extends ChangeNotifier {
     } else {
       uid = auth.user!.uid;
       // Start listening to favorites stream
-      _subscription = _repo.streamFavorites(uid!).listen((list) {
+      subscription = _repo.streamFavorites(uid!).listen((list) {
         favorites = list;
         notifyListeners();
       }) as Stream?;

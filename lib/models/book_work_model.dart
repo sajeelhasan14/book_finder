@@ -1,11 +1,9 @@
-/// A detailed model that represents a single work fetched from
-/// `/works/{id}.json`. This includes metadata like subjects, authors,
-/// covers, and timestamps.
+
 class BookWorkModel {
   final String? title;
   final String? key;
   final List<Authors>? authors;
-  final WorkType? type;
+  final Type1? type;
   final String? description;
   final List<int>? covers;
   final List<String>? subjectPlaces;
@@ -36,60 +34,39 @@ class BookWorkModel {
     this.lastModified,
   });
 
-  /// Factory constructor for safe parsing of `/works/{id}.json`.
+  /// Factory constructor with safe parsing
   factory BookWorkModel.fromJson(Map<String, dynamic> json) {
-    List<T>? _listOf<T>(dynamic v, T Function(dynamic) mapFn) {
-      if (v == null) return null;
-      if (v is List) return v.map(mapFn).toList();
-      return null;
-    }
-
-    List<int>? _covers(dynamic v) {
-      if (v == null) return null;
-      if (v is List) {
-        return v
-            .map((e) => (e is int) ? e : int.tryParse(e.toString()))
-            .where((e) => e != null)
-            .map((e) => e!)
-            .toList();
-      }
-      return null;
-    }
-
     return BookWorkModel(
       title: json["title"] as String?,
       key: json["key"] as String?,
-      authors: _listOf<Authors>(json["authors"],
-          (e) => Authors.fromJson(Map<String, dynamic>.from(e as Map))),
-      type: json["type"] != null
-          ? WorkType.fromJson(Map<String, dynamic>.from(json["type"] as Map))
-          : null,
+      authors: (json["authors"] as List?)
+          ?.map((e) => Authors.fromJson(e))
+          .toList(),
+      type: json["type"] != null ? Type1.fromJson(json["type"]) : null,
       description: _parseDescription(json["description"]),
-      covers: _covers(json["covers"]),
-      subjectPlaces:
-          _listOf<String>(json["subject_places"], (e) => e.toString()),
-      subjects: _listOf<String>(json["subjects"], (e) => e.toString()),
-      subjectPeople:
-          _listOf<String>(json["subject_people"], (e) => e.toString()),
-      subjectTimes:
-          _listOf<String>(json["subject_times"], (e) => e.toString()),
+      covers: (json["covers"] as List?)?.map((e) => e as int).toList(),
+      subjectPlaces: (json["subject_places"] as List?)
+          ?.map((e) => e as String)
+          .toList(),
+      subjects: (json["subjects"] as List?)?.map((e) => e as String).toList(),
+      subjectPeople: (json["subject_people"] as List?)
+          ?.map((e) => e as String)
+          .toList(),
+      subjectTimes: (json["subject_times"] as List?)
+          ?.map((e) => e as String)
+          .toList(),
       location: json["location"] as String?,
-      latestRevision: (json["latest_revision"] is num)
-          ? (json["latest_revision"] as num).toInt()
-          : null,
-      revision:
-          (json["revision"] is num) ? (json["revision"] as num).toInt() : null,
+      latestRevision: json["latest_revision"] as int?,
+      revision: json["revision"] as int?,
       created: json["created"] != null
-          ? Created.fromJson(Map<String, dynamic>.from(json["created"] as Map))
+          ? Created.fromJson(json["created"])
           : null,
       lastModified: json["last_modified"] != null
-          ? LastModified.fromJson(
-              Map<String, dynamic>.from(json["last_modified"] as Map))
+          ? LastModified.fromJson(json["last_modified"])
           : null,
     );
   }
 
-  /// Converts this object back into JSON.
   Map<String, dynamic> toJson() {
     return {
       "title": title,
@@ -110,7 +87,7 @@ class BookWorkModel {
     };
   }
 
-  /// Handles description safely (string or object).
+  /// Helper for safe description parsing
   static String? _parseDescription(dynamic description) {
     if (description == null) return null;
     if (description is String) return description;
@@ -119,77 +96,91 @@ class BookWorkModel {
     }
     return description.toString();
   }
-
-  /// Returns the first cover ID (useful for images).
-  int? get firstCoverId =>
-      covers != null && covers!.isNotEmpty ? covers!.first : null;
-
-  /// Returns the list of author keys (OL IDs).
-  List<String> get authorKeys => authors
-          ?.map((a) => a.author?.key)
-          .where((k) => k != null && k!.isNotEmpty)
-          .map((k) => k!.replaceAll('/authors/', ''))
-          .toList() ??
-      [];
 }
-
-/* -------- Nested classes for BookWorkModel -------- */
 
 class LastModified {
   final String? type;
   final String? value;
+
   LastModified({this.type, this.value});
-  factory LastModified.fromJson(Map<String, dynamic> json) =>
-      LastModified(type: json["type"], value: json["value"]);
+
+  factory LastModified.fromJson(Map<String, dynamic> json) {
+    return LastModified(
+      type: json["type"] as String?,
+      value: json["value"] as String?,
+    );
+  }
+
   Map<String, dynamic> toJson() => {"type": type, "value": value};
 }
 
 class Created {
   final String? type;
   final String? value;
+
   Created({this.type, this.value});
-  factory Created.fromJson(Map<String, dynamic> json) =>
-      Created(type: json["type"], value: json["value"]);
+
+  factory Created.fromJson(Map<String, dynamic> json) {
+    return Created(
+      type: json["type"] as String?,
+      value: json["value"] as String?,
+    );
+  }
+
   Map<String, dynamic> toJson() => {"type": type, "value": value};
 }
 
-class WorkType {
+class Type1 {
   final String? key;
-  WorkType({this.key});
-  factory WorkType.fromJson(Map<String, dynamic> json) =>
-      WorkType(key: json["key"]);
+
+  Type1({this.key});
+
+  factory Type1.fromJson(Map<String, dynamic> json) {
+    return Type1(key: json["key"] as String?);
+  }
+
   Map<String, dynamic> toJson() => {"key": key};
 }
 
 class Authors {
   final Author? author;
-  final AuthorType? type;
+  final Type? type;
+
   Authors({this.author, this.type});
-  factory Authors.fromJson(Map<String, dynamic> json) => Authors(
-        author: json["author"] != null
-            ? Author.fromJson(Map<String, dynamic>.from(json["author"]))
-            : null,
-        type: json["type"] != null
-            ? AuthorType.fromJson(Map<String, dynamic>.from(json["type"]))
-            : null,
-      );
+
+  factory Authors.fromJson(Map<String, dynamic> json) {
+    return Authors(
+      author: json["author"] != null ? Author.fromJson(json["author"]) : null,
+      type: json["type"] != null ? Type.fromJson(json["type"]) : null,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
-        "author": author?.toJson(),
-        "type": type?.toJson(),
-      };
+    "author": author?.toJson(),
+    "type": type?.toJson(),
+  };
 }
 
-class AuthorType {
+class Type {
   final String? key;
-  AuthorType({this.key});
-  factory AuthorType.fromJson(Map<String, dynamic> json) =>
-      AuthorType(key: json["key"]);
+
+  Type({this.key});
+
+  factory Type.fromJson(Map<String, dynamic> json) {
+    return Type(key: json["key"] as String?);
+  }
+
   Map<String, dynamic> toJson() => {"key": key};
 }
 
 class Author {
   final String? key;
+
   Author({this.key});
-  factory Author.fromJson(Map<String, dynamic> json) => Author(key: json["key"]);
+
+  factory Author.fromJson(Map<String, dynamic> json) {
+    return Author(key: json["key"] as String?);
+  }
+
   Map<String, dynamic> toJson() => {"key": key};
 }

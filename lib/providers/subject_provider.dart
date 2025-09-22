@@ -31,4 +31,12 @@ class SubjectProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+   String? _selectedSubject;
+
+  String? get selectedSubject => _selectedSubject;
+  void selectSubject(String subject) {
+    _selectedSubject = subject;
+    notifyListeners();
+  }
 }

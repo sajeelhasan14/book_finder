@@ -97,14 +97,14 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (index < prov.works.length) {
                   final w = prov.works[index];
                   return BookCard(
-                    work: w,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => WorkDetailScreen(workId: w.workId),
-                      ),
-                    ),
-                  );
+  work: w,
+  onTap: () => Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => WorkDetailScreen(workId: w.key ?? ''),
+    ),
+  ),
+);
                 } else {
                   return const Padding(
                     padding: EdgeInsets.all(12),
