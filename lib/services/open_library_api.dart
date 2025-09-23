@@ -84,26 +84,15 @@ class OpenLibraryApi {
     );
     return ApiService.authorPhoto(authorId, size: s);
   }
-  // 🔥 TRENDING (proxy using popular works)
-  static Future<Response?> getTrendingBooks({int limit = 10}) {
-    return DioClient.get(
-      ApiService.search,
-      queryParams: {
-        "q": "",
-        "limit": limit,
-        "sort": "editions", // more editions = more popular
-      },
-    );
-  }
+// 🔥 Trending
+static Future<Response?> getTrendingBooks() {
+  return DioClient.get(ApiService.trending);
+}
 
-  static Future<Response?> getRecentBooks({int limit = 10}) {
-    return DioClient.get(
-      ApiService.search,
-      queryParams: {
-        "q": "",
-        "limit": limit,
-        "sort": "new", // OpenLibrary supports "new" sort for freshness
-      },
-    );
-  }
+
+// 🆕 Recent (supports limit)
+static Future<Response?> getRecentBooks({int limit = 10}) {
+  return DioClient.get(ApiService.recent, queryParams: {"limit": limit});
+}
+
 }

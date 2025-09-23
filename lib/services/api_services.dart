@@ -1,6 +1,5 @@
 import 'package:book_finder/core/constant.dart';
 
-
 class ApiService {
   // Base URLs
   static const String baseUrl = ApiConstants.baseUrl;
@@ -26,14 +25,19 @@ class ApiService {
 
   // Author works
   // Example: /authors/OL23919A/works.json?limit=50&offset=0
-  static String authorWorks(String authorId, {int limit = 50, int offset = 0}) =>
-      "$baseUrl/authors/$authorId/works.json?limit=$limit&offset=$offset";
+  static String authorWorks(
+    String authorId, {
+    int limit = 50,
+    int offset = 0,
+  }) => "$baseUrl/authors/$authorId/works.json?limit=$limit&offset=$offset";
 
   // ---------- SUBJECTS ----------
   // Example: /subjects/fantasy.json?details=true&limit=25
-  static String subjectBooks(String subject,
-          {int limit = 25, bool details = true}) =>
-      "$baseUrl/subjects/$subject.json?details=$details&limit=$limit";
+  static String subjectBooks(
+    String subject, {
+    int limit = 25,
+    bool details = true,
+  }) => "$baseUrl/subjects/$subject.json?details=$details&limit=$limit";
 
   // ---------- COVERS ----------
   // Example: https://covers.openlibrary.org/b/id/{coverId}-M.jpg
@@ -43,4 +47,10 @@ class ApiService {
   // Example: https://covers.openlibrary.org/a/olid/{authorId}-M.jpg
   static String authorPhoto(String authorId, {String? size}) =>
       "$coversBaseUrl/a/olid/$authorId-${size ?? ApiConstants.defaultCoverSize}.jpg";
+
+  // 🔥 Trending
+  static const String trending = "$baseUrl/trending/daily.json";
+
+  // 🆕 Recently Added
+  static const String recent = "$baseUrl/recentchanges.json";
 }

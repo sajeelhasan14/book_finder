@@ -31,6 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   int _currentIndex = 0;
+  @override
+void initState() {
+  super.initState();
+  // Trigger trending + recent fetch once when screen loads
+  Future.microtask(() {
+    Provider.of<BookProvider>(context, listen: false).refreshAll();
+  });
+}
 
   @override
   Widget build(BuildContext context) {
