@@ -1,6 +1,8 @@
+import 'package:book_finder/bottom_navigation.dart';
 import 'package:book_finder/providers/auth_provider.dart';
 import 'package:book_finder/providers/author_provider.dart';
 import 'package:book_finder/providers/book_provider.dart';
+import 'package:book_finder/providers/bottom_navigation_provider.dart';
 import 'package:book_finder/providers/editions_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/providers/search_provider.dart';
@@ -8,7 +10,7 @@ import 'package:book_finder/providers/settings_provider.dart';
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/providers/subject_provider.dart';
 import 'package:book_finder/providers/work_detail_provider.dart';
-import 'package:book_finder/screens/home/home_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -37,10 +39,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SubjectProvider()),
         ChangeNotifierProvider(create: (_) => WorkDetailProvider()),
         ChangeNotifierProvider(create: (_) => BookProvider()),
+        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: const HomeScreen(),
+        home: const BottomNavigationScreen(),
       ),
     );
   }

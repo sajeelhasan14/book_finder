@@ -9,17 +9,11 @@ class BookProvider extends ChangeNotifier {
   List<BookWork> _trending = [];
   List<BookWork> get trending => _trending;
 
-
-
   bool _isLoadingTrending = false;
   bool get isLoadingTrending => _isLoadingTrending;
 
- 
-
   String? _errorTrending;
   String? get errorTrending => _errorTrending;
-
- 
 
   // Fetch trending books
   Future<void> fetchTrending({int limit = 10}) async {
@@ -38,13 +32,8 @@ class BookProvider extends ChangeNotifier {
     notifyListeners();
   }
 
- 
-
   // Refresh both sections
   Future<void> refreshTrending() async {
-    await Future.wait([
-      fetchTrending(limit: 10),
-      
-    ]);
+    await Future.wait([fetchTrending(limit: 10)]);
   }
 }

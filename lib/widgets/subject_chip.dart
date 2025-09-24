@@ -1,49 +1,59 @@
+import 'package:book_finder/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
 
 class SubjectChip extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final bool selected;
+  final List<String> labels;
+  
 
-  const SubjectChip({
-    super.key,
-    required this.label,
-    required this.onTap,
-    this.selected = false,
-  });
+  const SubjectChip({super.key, required this.labels});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? Colors.deepPurple : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? Colors.deepPurple : Colors.grey.shade400,
-            width: 1,
-          ),
-          boxShadow: selected
-              ? [
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: labels.length,
+        itemBuilder: (context, idx) {
+          final s = labels[idx];
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => SearchScreen(initialQuery: s)),
+            ),
+            child: Container(
+              width: 160,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF673AB7), Color(0xFF8E64D8)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
                   BoxShadow(
-                    color: Colors.deepPurple,
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
-                ]
-              : [],
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: selected ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  s,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: "Cinzel",
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
