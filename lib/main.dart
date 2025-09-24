@@ -10,7 +10,6 @@ import 'package:book_finder/providers/settings_provider.dart';
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/providers/subject_provider.dart';
 import 'package:book_finder/providers/work_detail_provider.dart';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';

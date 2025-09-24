@@ -28,7 +28,7 @@ class _EditionsScreenState extends State<EditionsScreen> {
   Future<void> loadEditions() async {
     try {
       final resp = await OpenLibraryApi.getEditions(widget.workId);
-      final data = resp?.data as Map<String, dynamic>;
+      final data = resp.data as Map<String, dynamic>;
       setState(() {
         editions = data['entries'] ?? [];
         loading = false;

@@ -6,6 +6,7 @@ import 'package:book_finder/screens/auth/signup_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
 import 'package:book_finder/widgets/subject_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:book_finder/screens/search/search_screen.dart';
 import 'package:book_finder/providers/auth_provider.dart';
@@ -160,77 +161,23 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
 
             SizedBox(
-              height: 240,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: bookProvider.trending.length,
-                itemBuilder: (context, index) {
-                  final work = bookProvider.trending[index];
-                  final coverUrl = work.coverId != null
-                      ? OpenLibraryApi.getCoverUrl(
-                          work.coverId!,
-                          size: ApiConstants.coverLarge,
-                        )
-                      : null;
+              height: 250,
+              child: bookProvider.isLoadingTrending
+                  ? const Center(
+                      child: SpinKitThreeBounce(
+                        color: Colors.deepPurple,
+                        size: 30,
+                      ),
+                    )
+                  : ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: bookProvider.trending.length,
+                      itemBuilder: (context, index) {
+                        final work = bookProvider.trending[index];
 
-                  return Container(
-                    width: 150,
-                    margin: const EdgeInsets.only(right: 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Book cover
-                        Container(
-                          height: 180,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
-                                blurRadius: 6,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: coverUrl != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(
-                                    coverUrl,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) =>
-                                        const Icon(Icons.book, size: 50),
-                                  ),
-                                )
-                              : const Icon(Icons.book, size: 50),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          work.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          work.authors.isNotEmpty
-                              ? work.authors.first
-                              : "Unknown",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ],
+                        return BookCard(work: work);
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             const SizedBox(height: 28),
 

@@ -96,15 +96,7 @@ class _SearchScreenState extends State<SearchScreen> {
               itemBuilder: (context, index) {
                 if (index < prov.works.length) {
                   final w = prov.works[index];
-                  return BookCard(
-  work: w,
-  onTap: () => Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => WorkDetailScreen(workId: w.key ?? ''),
-    ),
-  ),
-);
+                  return BookCard(work: w);
                 } else {
                   return const Padding(
                     padding: EdgeInsets.all(12),

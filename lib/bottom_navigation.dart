@@ -26,6 +26,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     return Scaffold(
       body: pages[Provider.of<BottomNavigationProvider>(context).currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        unselectedItemColor: Colors.grey,
         selectedItemColor: Colors.deepPurple,
         currentIndex: Provider.of<BottomNavigationProvider>(
           context,
