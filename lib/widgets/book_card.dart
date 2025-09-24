@@ -1,108 +1,85 @@
+// lib/widgets/book_card.dart
+import 'package:book_finder/core/constant.dart';
 import 'package:flutter/material.dart';
-import 'package:book_finder/models/book_work_model.dart';
+import 'package:book_finder/models/book_work.dart';
+import 'package:book_finder/services/open_library_api.dart';
+
 
 class BookCard extends StatelessWidget {
-  final BookWorkModel? work; // From search results
-  final BookWorkModel? workModel; // From detailed API
-  final String? title; // Manual fallback
-  final String? author; // Manual fallback
-  final String? coverUrl; // Manual fallback
-  final VoidCallback? onTap;
+  final BookWork work;          // The book/work data to display
+  final VoidCallback? onTap;    // Optional callback when the card is tapped
 
-  const BookCard({
-    super.key,
-    this.work,
-    this.workModel,
-    this.title,
-    this.author,
-    this.coverUrl,
-    this.onTap,
-  });
+  const BookCard({super.key, required this.work, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final displayTitle =
-        workModel?.title ?? work?.title ?? title ?? "Untitled";
+    // Build the cover image URL if a coverId exists, otherwise null
+    final coverUrl = work.coverId != null
+        ? OpenLibraryApi.getCoverUrl(work.coverId!, size: ApiConstants.coverMedium)
+        : null;
 
-    final displayAuthor = workModel?.authors
-            ?.map((a) => a.author?.key ?? "")
-            .where((s) => s.isNotEmpty)
-            .join(', ') ??
-        (work!.authors?.join(", ") ?? author ?? "Unknown");
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+      child: InkWell(
+        onTap: onTap, // Handle tap (e.g., navigate to details screen)
+        child: SizedBox(
+          height: 100,
+          child: Row(
+            children: [
+              // Left side: cover image (or placeholder)
+              Container(
+                width: 70,
+                height: 100,
+                color: Colors.grey.shade200, // fallback background
+                child: coverUrl != null
+                    ? Image.network(
+                        coverUrl,
+                        fit: BoxFit.cover,
+                        // If image fails to load → show book icon
+                        errorBuilder: (_, __, ___) => const Icon(Icons.book, size: 40),
+                      )
+                    : const Icon(Icons.book, size: 40), // Default icon if no coverId
+              ),
+              const SizedBox(width: 12),
 
-    final displayCover = (workModel?.covers != null &&
-            workModel!.covers!.isNotEmpty)
-        ? "https://covers.openlibrary.org/b/id/${workModel!.covers}-M.jpg"
-        : (work?.covers != null
-            ? "https://covers.openlibrary.org/b/id/${work!.covers}-M.jpg"
-            : coverUrl);
+              // Right side: book details
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Book title
+                      Text(
+                        work.title,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 130,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            displayCover != null
-                ? ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.network(
-                      displayCover,
-                      height: 140,
-                      width: 140,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : Container(
-                    height: 140,
-                    decoration: const BoxDecoration(
-                      color: Colors.deepPurple,
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(12)),
-                    ),
-                    child: const Icon(
-                      Icons.book,
-                      size: 40,
-                      color: Colors.white,
-                    ),
+                      // Author(s) or "Unknown"
+                      Text(
+                        work.authors.isNotEmpty ? work.authors.join(', ') : 'Unknown',
+                        style: const TextStyle(fontSize: 13, color: Colors.black54),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Spacer(),
+
+                      // First publish year if available
+                      if (work.firstPublishYear != null)
+                        Text(
+                          'First: ${work.firstPublishYear}',
+                          style: const TextStyle(fontSize: 12, color: Colors.black45),
+                        ),
+                    ],
                   ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                displayTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                displayAuthor.isNotEmpty ? displayAuthor : "Unknown",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ),
-          ],
+              const SizedBox(width: 8),
+            ],
+          ),
         ),
       ),
     );

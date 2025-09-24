@@ -1,14 +1,13 @@
-import 'package:book_finder/providers/book_provider.dart';
+// lib/screens/home/home_screen.dart
 import 'package:book_finder/providers/favorite_provider.dart';
-import 'package:book_finder/providers/auth_provider.dart';
-import 'package:book_finder/providers/subject_provider.dart';
-import 'package:book_finder/screens/home/more_books_screen.dart';
-import 'package:book_finder/screens/search/search_screen.dart';
-import 'package:book_finder/services/open_library_api.dart';
-import 'package:book_finder/widgets/subject_chip.dart';
-import 'package:book_finder/widgets/book_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:book_finder/screens/search/search_screen.dart';
+import 'package:book_finder/providers/auth_provider.dart';
+
+import 'package:book_finder/widgets/book_card.dart';
+import 'package:book_finder/models/book_work.dart';
+
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/';
@@ -30,30 +29,30 @@ class _HomeScreenState extends State<HomeScreen> {
     'children',
   ];
 
-  int _currentIndex = 0;
   @override
-void initState() {
-  super.initState();
-  // Trigger trending + recent fetch once when screen loads
-  Future.microtask(() {
-    Provider.of<BookProvider>(context, listen: false).refreshTrending();
-  });
-}
+  void dispose() {
+    ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     final favProv = Provider.of<FavoritesProvider>(context);
-    final subjectProv = Provider.of<SubjectProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Book Finder'),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+            icon: const Icon(Icons.settings),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// 🔍 Search bar
             Row(
@@ -83,8 +82,9 @@ void initState() {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  SearchScreen(initialQuery: ctrl.text.trim()),
+                              builder: (_) => SearchScreen(
+                                initialQuery: ctrl.text.trim(),
+                              ),
                             ),
                           );
                         },
@@ -96,255 +96,63 @@ void initState() {
             ),
             const SizedBox(height: 16),
 
-            /// 🎯 Subject Chips
+            /// 🎯 Subject chips
             SizedBox(
               height: 50,
-              child: ListView(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                children: subjects.map((s) {
-                  return SubjectChip(
-                    label: s.replaceAll('_', ' ').toUpperCase(),
-                    selected: subjectProv.selectedSubject == s,
-                    onTap: () {
-                      subjectProv.selectSubject(s);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              SearchScreen(initialQuery: 'subject:$s'),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            /// 🔥 Trending header row
-            // Trending Section
-Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    const Text(
-      'Trending Books',
-      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    ),
-    TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const MoreBooksScreen(type: 'trending'),
-          ),
-        );
-      },
-      child: const Text("More"),
-    ),
-  ],
-),
-
-SizedBox(
-  height: 220,
-  child: Consumer<BookProvider>(
-    builder: (context, prov, _) {
-      if (prov.trending.isEmpty) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: prov.trending.length,
-        itemBuilder: (context, index) {
-          final book = prov.trending[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: SizedBox(
-              width: 140,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Cover
-                  book.covers != null
-                      ? Image.network(
-                          OpenLibraryApi.getCoverUrl(book.covers![index], size: "S"),
-                          width: 120,
-                          height: 160,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          width: 120,
-                          height: 160,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.book, size: 50),
-                        ),
-                  const SizedBox(height: 6),
-                  // Title
-                  Text(
-                    book.title ?? 'Untitled',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  // Authors
-                  Text(
-                    (book.authors != null && book.authors!.isNotEmpty) ? book.authors!.join(', ') : 'Unknown',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    },
-  ),
-),
-
-const SizedBox(height: 16),
-
-// Recently Added Section
-Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    const Text(
-      'Recently Added',
-      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    ),
-    TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const MoreBooksScreen(type: 'recent'),
-          ),
-        );
-      },
-      child: const Text("More"),
-    ),
-  ],
-),
-
-SizedBox(
-  height: 220,
-  child: Consumer<BookProvider>(
-    builder: (context, prov, _) {
-      if (prov.trending.isEmpty) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: prov.trending.length,
-        itemBuilder: (context, index) {
-          final book = prov.trending[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: SizedBox(
-              width: 140,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Cover
-                  book.covers != null && book.covers!.isNotEmpty
-                      ? Image.network(
-                          OpenLibraryApi.getCoverUrl(book.covers![index], size: "M"),
-                          width: 120,
-                          height: 160,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          width: 120,
-                          height: 160,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.book, size: 50),
-                        ),
-                  const SizedBox(height: 6),
-                  // Title
-                  Text(
-                    book.title ?? 'Untitled',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  // Authors
-                  Text(
-                    (book.authors != null && book.authors!.isNotEmpty) ? book.authors!.join(', ') : 'Unknown',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    },
-  ),
-),
-
-
-            const SizedBox(height: 24),
-
-            /// ❤️ Favorites or Sign-in prompt
-            auth.isSignedIn
-                ? SizedBox(
-                    height: 250,
-                    child: _buildFavorites(favProv),
-                  )
-                : Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('Sign in to see favorites'),
-                        ElevatedButton(
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/signin'),
-                          child: const Text('Sign in'),
-                        ),
-                      ],
+                itemCount: subjects.length,
+                itemBuilder: (context, idx) {
+                  final s = subjects[idx];
+                  return GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            SearchScreen(initialQuery: 'subject:$s'),
+                      ),
                     ),
-                  ),
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.shade50,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.deepPurple.shade100),
+                      ),
+                      child: Text(
+                        s.replaceAll('_', ' ').toUpperCase(),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            /// ❤️ Favorites or sign-in prompt
+            Expanded(
+              child: auth.isSignedIn
+                  ? _buildFavorites(favProv)
+                  : Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Sign in to see favorites'),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: () =>
+                                Navigator.pushNamed(context, '/signin'),
+                            child: const Text('Sign in'),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
           ],
         ),
-      ),
-
-      /// 📌 Bottom Navigation
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
-          switch (index) {
-            case 0:
-              break; // Already Home
-            case 1:
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const SearchScreen(initialQuery: ""),
-                ),
-              );
-              break;
-            case 2:
-              // Favorites screen
-              break;
-            case 3:
-              // Settings screen
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favorites"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
-        ],
       ),
     );
   }
@@ -353,22 +161,25 @@ SizedBox(
     if (prov.favorites.isEmpty) {
       return const Center(child: Text('No favorites yet'));
     }
+
     return ListView.builder(
-      scrollDirection: Axis.horizontal,
       itemCount: prov.favorites.length,
       itemBuilder: (ctx, idx) {
         final f = prov.favorites[idx];
-        final title = f['title'] ?? 'Untitled';
-        final authors =
-            (f['authors'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .join(', ') ??
-            'Unknown';
-        return BookCard(
-          title: title.toString(),
-          author: authors,
-          coverUrl: f['coverUrl'],
+
+        // Safely build BookWork from favorite map
+        final work = BookWork(
+          key: f['key'] ?? '',
+          title: f['title'] ?? 'Untitled',
+          authors: (f['authors'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              [],
+          coverId: f['coverId'],
+          firstPublishYear: f['firstPublishYear'],
         );
+
+        return BookCard(work: work);
       },
     );
   }

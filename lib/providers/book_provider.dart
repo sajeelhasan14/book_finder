@@ -1,12 +1,13 @@
-import 'package:book_finder/models/book_work_model.dart';
+import 'package:book_finder/models/book_work.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:book_finder/repositories/book_repository.dart';
 
 class BookProvider extends ChangeNotifier {
   // 🔥 Trending books
-  List<BookWorkModel> _trending = [];
-  List<BookWorkModel> get trending => _trending;
+  List<BookWork> _trending = [];
+  List<BookWork> get trending => _trending;
 
 
 
