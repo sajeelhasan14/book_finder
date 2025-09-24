@@ -1,7 +1,8 @@
 // lib/providers/search_provider.dart
 
+import 'package:book_finder/models/book_work_model.dart';
 import 'package:flutter/material.dart';
-import 'package:book_finder/models/book_work.dart';
+
 import 'package:book_finder/repositories/book_repository.dart';
 
 // States for handling search data flow
@@ -10,7 +11,7 @@ enum DataState { idle, loading, data, empty, error }
 class SearchProvider extends ChangeNotifier {
   DataState state = DataState.idle;
   String errorMessage = '';
-  List<BookWork> works = [];
+  List<BookWorkModel> works = [];
   int page = 1;
   int limit = 20;
   int totalFound = 0;
@@ -30,7 +31,7 @@ class SearchProvider extends ChangeNotifier {
     }
     try {
       final result = await BookRepository.search(query, page: page, limit: limit);
-      final fetched = result['works'] as List<BookWork>;
+      final fetched = result['works'] as List<BookWorkModel>;
       final found = result['numFound'] as int;
 
       if (fetched.isEmpty && page == 1) {
@@ -58,7 +59,7 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final result = await BookRepository.search(currentQuery, page: page, limit: limit);
-      final fetched = result['works'] as List<BookWork>;
+      final fetched = result['works'] as List<BookWorkModel>;
       works.addAll(fetched);
     } catch (e) {
       errorMessage = e.toString(); // keep error for debugging

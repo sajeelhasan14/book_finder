@@ -145,21 +145,25 @@ class Type1 {
 class Authors {
   final Author? author;
   final Type? type;
+  final String? name; // NEW field for author_name (from search API)
 
-  Authors({this.author, this.type});
+  Authors({this.author, this.type, this.name});
 
   factory Authors.fromJson(Map<String, dynamic> json) {
     return Authors(
       author: json["author"] != null ? Author.fromJson(json["author"]) : null,
       type: json["type"] != null ? Type.fromJson(json["type"]) : null,
+      name: json["name"] as String?, // Safe parse
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "author": author?.toJson(),
-    "type": type?.toJson(),
-  };
+        "author": author?.toJson(),
+        "type": type?.toJson(),
+        "name": name,
+      };
 }
+
 
 class Type {
   final String? key;

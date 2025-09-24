@@ -90,9 +90,6 @@ static Future<Response?> getTrendingBooks() {
 }
 
 
-// 🆕 Recent (supports limit)
-static Future<Response?> getRecentBooks({int limit = 10}) {
-  return DioClient.get(ApiService.recent, queryParams: {"limit": limit});
-}
+
 
 }

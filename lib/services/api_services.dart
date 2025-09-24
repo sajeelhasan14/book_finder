@@ -51,6 +51,5 @@ class ApiService {
   // 🔥 Trending
   static const String trending = "$baseUrl/trending/daily.json";
 
-  // 🆕 Recently Added
-  static const String recent = "$baseUrl/recentchanges.json";
+  
 }

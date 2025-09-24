@@ -1,7 +1,8 @@
 // lib/providers/subject_provider.dart
+import 'package:book_finder/models/book_work_model.dart';
 import 'package:flutter/material.dart';
 import 'package:book_finder/repositories/subject_repository.dart';
-import 'package:book_finder/models/book_work.dart';
+
 
 /// Possible states for subject data
 enum SubjectState { idle, loading, data, error }
@@ -11,7 +12,7 @@ class SubjectProvider extends ChangeNotifier {
   SubjectState state = SubjectState.idle;
   String? errorMessage;
   String? subjectName;
-  List<BookWork> works = [];
+  List<BookWorkModel> works = [];
 
   /// Load books for a given subject
   Future<void> loadSubject(String subjectSlug) async {
@@ -23,7 +24,7 @@ class SubjectProvider extends ChangeNotifier {
     try {
       final result = await SubjectRepository.getSubject(subjectSlug);
       subjectName = result['subject'] as String?;
-      works = result['works'] as List<BookWork>;
+      works = result['works'] as List<BookWorkModel>;
       state = SubjectState.data;
     } catch (e) {
       errorMessage = e.toString();

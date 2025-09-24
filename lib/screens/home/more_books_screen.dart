@@ -20,13 +20,13 @@ class MoreBooksScreen extends StatelessWidget {
       body: Consumer<BookProvider>(
         builder: (context, bookProv, _) {
           final books =
-              type == 'trending' ? bookProv.trending : bookProv.recent;
+              type == 'trending' ? bookProv.trending : bookProv.trending;
           final isLoading = type == 'trending'
               ? bookProv.isLoadingTrending
-              : bookProv.isLoadingRecent;
+              : bookProv.isLoadingTrending;
           final error = type == 'trending'
               ? bookProv.errorTrending
-              : bookProv.errorRecent;
+              : bookProv.errorTrending;
 
           if (isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -44,7 +44,8 @@ class MoreBooksScreen extends StatelessWidget {
                       if (type == 'trending') {
                         bookProv.fetchTrending(limit: 20);
                       } else {
-                        bookProv.fetchRecent(limit: 20);
+                        bookProv.fetchTrending
+                        (limit: 20);
                       }
                     },
                     child: const Text('Retry'),
@@ -63,7 +64,7 @@ class MoreBooksScreen extends StatelessWidget {
               if (type == 'trending') {
                 await bookProv.fetchTrending(limit: 20);
               } else {
-                await bookProv.fetchRecent(limit: 20);
+                await bookProv.fetchTrending(limit: 20);
               }
             },
             child: ListView.builder(
@@ -73,12 +74,12 @@ class MoreBooksScreen extends StatelessWidget {
                 return BookCard(
                   work: book,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => WorkDetailScreen(workId: book.workId),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) => WorkDetailScreen(workId: book.workId),
+                    //   ),
+                    // );
                   },
                 );
               },

@@ -2,7 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:book_finder/services/open_library_api.dart';
-import 'package:book_finder/models/book_work.dart';
+
 import 'package:book_finder/models/book_work_model.dart';
 import 'package:book_finder/models/edition.dart';
 
@@ -22,7 +22,7 @@ class BookRepository {
     final docs = (data['docs'] as List<dynamic>?) ?? [];
     final works = docs
         .map(
-          (d) => BookWork.fromSearchJson(Map<String, dynamic>.from(d as Map)),
+          (d) => BookWorkModel.fromJson(Map<String, dynamic>.from(d as Map)),
         )
         .toList();
     final numFound = (data['numFound'] is num)
@@ -60,36 +60,18 @@ class BookRepository {
   }
 
  // 🔥 Trending books
-static Future<List<BookWork>> getTrendingBooks({int limit = 10}) async {
+static Future<List<BookWorkModel>> getTrendingBooks({int limit = 10}) async {
   final resp = await OpenLibraryApi.getTrendingBooks(); // no limit param
   if (resp?.data == null) return [];
   final data = resp!.data as Map<String, dynamic>;
   final works = (data['works'] as List<dynamic>? ?? []);
   return works
-      .map((d) => BookWork.fromSearchJson(Map<String, dynamic>.from(d as Map)))
+      .map((d) => BookWorkModel.fromJson(Map<String, dynamic>.from(d as Map)))
       .take(limit) // manually limit the results
       .toList();
 }
 
-// 🆕 Recently added books
-static Future<List<BookWork>> getRecentBooks({int limit = 10}) async {
-  final resp = await OpenLibraryApi.getRecentBooks(limit: limit); // supported
-  if (resp?.data == null) return [];
-  final data = resp!.data as List<dynamic>; // recentchanges returns a list
-  return data
-      .take(limit)
-      .map((item) {
-        final map = Map<String, dynamic>.from(item as Map);
-        final work = map['data']?['works']?[0];
-        if (work is Map) {
-          return BookWork.fromSearchJson(Map<String, dynamic>.from(work));
-        }
-        return null;
-      })
-      .where((e) => e != null)
-      .cast<BookWork>()
-      .toList();
-}
+
 
 
 }

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:book_finder/models/book_work_model.dart';
-import 'package:book_finder/models/book_work.dart';
 
 class BookCard extends StatelessWidget {
-  final BookWork? work; // From search results
+  final BookWorkModel? work; // From search results
   final BookWorkModel? workModel; // From detailed API
   final String? title; // Manual fallback
   final String? author; // Manual fallback
@@ -29,13 +28,13 @@ class BookCard extends StatelessWidget {
             ?.map((a) => a.author?.key ?? "")
             .where((s) => s.isNotEmpty)
             .join(', ') ??
-        (work?.authors.join(", ") ?? author ?? "Unknown");
+        (work!.authors?.join(", ") ?? author ?? "Unknown");
 
     final displayCover = (workModel?.covers != null &&
             workModel!.covers!.isNotEmpty)
-        ? "https://covers.openlibrary.org/b/id/${workModel!.covers!.first}-M.jpg"
-        : (work?.coverId != null
-            ? "https://covers.openlibrary.org/b/id/${work!.coverId}-M.jpg"
+        ? "https://covers.openlibrary.org/b/id/${workModel!.covers}-M.jpg"
+        : (work?.covers != null
+            ? "https://covers.openlibrary.org/b/id/${work!.covers}-M.jpg"
             : coverUrl);
 
     return GestureDetector(

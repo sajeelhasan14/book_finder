@@ -36,7 +36,7 @@ void initState() {
   super.initState();
   // Trigger trending + recent fetch once when screen loads
   Future.microtask(() {
-    Provider.of<BookProvider>(context, listen: false).refreshAll();
+    Provider.of<BookProvider>(context, listen: false).refreshTrending();
   });
 }
 
@@ -155,8 +155,8 @@ SizedBox(
       return ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: prov.trending.length,
-        itemBuilder: (context, idx) {
-          final book = prov.trending[idx];
+        itemBuilder: (context, index) {
+          final book = prov.trending[index];
           return Padding(
             padding: const EdgeInsets.only(right: 12),
             child: SizedBox(
@@ -165,9 +165,9 @@ SizedBox(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Cover
-                  book.coverId != null
+                  book.covers != null
                       ? Image.network(
-                          OpenLibraryApi.getCoverUrl(book.coverId!, size: "M"),
+                          OpenLibraryApi.getCoverUrl(book.covers![index], size: "S"),
                           width: 120,
                           height: 160,
                           fit: BoxFit.cover,
@@ -181,7 +181,7 @@ SizedBox(
                   const SizedBox(height: 6),
                   // Title
                   Text(
-                    book.title,
+                    book.title ?? 'Untitled',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -189,7 +189,7 @@ SizedBox(
                   ),
                   // Authors
                   Text(
-                    book.authors.isNotEmpty ? book.authors.join(', ') : 'Unknown',
+                    (book.authors != null && book.authors!.isNotEmpty) ? book.authors!.join(', ') : 'Unknown',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -232,14 +232,14 @@ SizedBox(
   height: 220,
   child: Consumer<BookProvider>(
     builder: (context, prov, _) {
-      if (prov.recent.isEmpty) {
+      if (prov.trending.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
       return ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: prov.recent.length,
-        itemBuilder: (context, idx) {
-          final book = prov.recent[idx];
+        itemCount: prov.trending.length,
+        itemBuilder: (context, index) {
+          final book = prov.trending[index];
           return Padding(
             padding: const EdgeInsets.only(right: 12),
             child: SizedBox(
@@ -248,9 +248,9 @@ SizedBox(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Cover
-                  book.coverId != null
+                  book.covers != null && book.covers!.isNotEmpty
                       ? Image.network(
-                          OpenLibraryApi.getCoverUrl(book.coverId!, size: "M"),
+                          OpenLibraryApi.getCoverUrl(book.covers![index], size: "M"),
                           width: 120,
                           height: 160,
                           fit: BoxFit.cover,
@@ -264,7 +264,7 @@ SizedBox(
                   const SizedBox(height: 6),
                   // Title
                   Text(
-                    book.title,
+                    book.title ?? 'Untitled',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -272,7 +272,7 @@ SizedBox(
                   ),
                   // Authors
                   Text(
-                    book.authors.isNotEmpty ? book.authors.join(', ') : 'Unknown',
+                    (book.authors != null && book.authors!.isNotEmpty) ? book.authors!.join(', ') : 'Unknown',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
