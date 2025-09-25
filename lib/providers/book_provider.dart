@@ -1,4 +1,5 @@
 import 'package:book_finder/models/book_work.dart';
+import 'package:book_finder/models/book_work_model.dart';
 
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,15 @@ class BookProvider extends ChangeNotifier {
   // 🔥 Trending books
   List<BookWork> _trending = [];
   List<BookWork> get trending => _trending;
+
+  List<BookWorkModel> _detailData = [];
+  List<BookWorkModel> get detailData => _detailData;
+
+  bool _isLoadingDetail = false;
+  bool get isLoadingDetail => _isLoadingDetail;
+
+  String? _errorDetail;
+  String? get errorDetail => _errorDetail;
 
   bool _isLoadingTrending = false;
   bool get isLoadingTrending => _isLoadingTrending;
@@ -32,8 +42,20 @@ class BookProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Refresh both sections
-  Future<void> refreshTrending() async {
-    await Future.wait([fetchTrending(limit: 10)]);
+   Future<void> fetchDetailData({required String workId}) async {
+    _isLoadingDetail = true;
+    _errorDetail = null;
+    notifyListeners();
+
+    try {
+      final data = await BookRepository.getWork(workId);
+      _detailData = [data];
+    } catch (e) {
+      _errorTrending = e.toString();
+    }
+
+    _isLoadingTrending = false;
+    notifyListeners();
   }
+  
 }

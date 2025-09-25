@@ -73,14 +73,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 📝 Subtitle
-            const Text(
-              "Discover your next great read.",
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: const Text(
+                "Discover your next great read.",
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
             ),
             const SizedBox(height: 20),
 
