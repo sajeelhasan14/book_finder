@@ -13,10 +13,12 @@ class EditionsProvider extends ChangeNotifier {
   List<Edition> editions = []; // List to hold fetched editions
   int limit = 20; // Pagination limit
   int offset = 0; // Pagination offset
-  bool isLoadingMore = false; // Prevents multiple "load more" calls simultaneously
+  bool isLoadingMore =
+      false; // Prevents multiple "load more" calls simultaneously
 
   // Main method to load editions (fresh load or reset if needed)
   Future<void> loadEditions(String workId, {bool reset = true}) async {
+    print(editions);
     if (reset) {
       state = EditionsState.loading; // ✅ UI will show loader
       editions = []; // Clear previous editions
@@ -25,7 +27,11 @@ class EditionsProvider extends ChangeNotifier {
     }
     try {
       // Fetch editions from repository with pagination
-      final fetched = await BookRepository.getEditions(workId, limit: limit, offset: offset);
+      final fetched = await BookRepository.getEditions(
+        workId,
+        limit: limit,
+        offset: offset,
+      );
 
       // If nothing comes back on the first load → show empty state
       if (fetched.isEmpty && offset == 0) {
@@ -49,7 +55,11 @@ class EditionsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final fetched = await BookRepository.getEditions(workId, limit: limit, offset: offset);
+      final fetched = await BookRepository.getEditions(
+        workId,
+        limit: limit,
+        offset: offset,
+      );
       editions.addAll(fetched);
       offset += fetched.length;
       // ⚠️ Suggestion: handle the case when `fetched` is empty (no more data).

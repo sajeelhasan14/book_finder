@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 class SubjectChip extends StatelessWidget {
   final List<String> labels;
-  
 
   const SubjectChip({super.key, required this.labels});
 
