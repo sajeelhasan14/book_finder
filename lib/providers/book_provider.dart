@@ -10,8 +10,9 @@ class BookProvider extends ChangeNotifier {
   List<BookWork> _trending = [];
   List<BookWork> get trending => _trending;
 
-  List<BookWorkModel> _detailData = [];
-  List<BookWorkModel> get detailData => _detailData;
+  BookWorkModel? _detailData;
+  BookWorkModel? get detailData => _detailData;
+  
 
   bool _isLoadingDetail = false;
   bool get isLoadingDetail => _isLoadingDetail;
@@ -42,19 +43,21 @@ class BookProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-   Future<void> fetchDetailData({required String workId}) async {
+   // Fetch work detail by key
+  Future<void> fetchDetailData({required String workId}) async {
     _isLoadingDetail = true;
     _errorDetail = null;
     notifyListeners();
 
     try {
       final data = await BookRepository.getWork(workId);
-      _detailData = [data];
+      _detailData = data; // single work
     } catch (e) {
-      _errorTrending = e.toString();
+      _errorDetail = e.toString();
+      _detailData = null;
     }
 
-    _isLoadingTrending = false;
+    _isLoadingDetail = false;
     notifyListeners();
   }
   

@@ -21,11 +21,16 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Clean the work key before passing it
+    final cleanWorkId = widget.work.key.replaceAll(RegExp(r'^/works/'), '');
+
+    // Fetch detail data using the cleaned ID
     Future.microtask(
       () => Provider.of<BookProvider>(
         context,
         listen: false,
-      ).fetchTrending(limit: 10),
+      ).fetchDetailData(workId: cleanWorkId),
     );
   }
 
@@ -37,10 +42,10 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
             size: ApiConstants.coverLarge,
           )
         : null;
-    final subjects = Provider.of<BookProvider>(
-      context,
-    ).detailData.first.subjects;
-    print(subjects);
+    final provider = Provider.of<BookProvider>(context);
+    final detail = provider.detailData;
+    final subjects = detail?.subjects ?? [];
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -126,7 +131,14 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                 color: Color(0xFF444444),
               ),
             ),
-            ChipWidget(text: subjects![0]),
+            Wrap(
+              spacing: 8,
+              runSpacing: 5,
+              children: subjects
+                  .take(3)
+                  .map((s) => ChipWidget(text: s))
+                  .toList(),
+            ),
           ],
         ),
       ),
