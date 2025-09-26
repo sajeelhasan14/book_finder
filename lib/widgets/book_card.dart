@@ -45,6 +45,7 @@ class BookCard extends StatelessWidget {
             // 📘 Book cover
             Container(
               height: 180,
+              width: width,
               decoration: BoxDecoration(
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(12),
@@ -69,10 +70,11 @@ class BookCard extends StatelessWidget {
                   : const Icon(Icons.book, size: 50),
             ),
             const SizedBox(height: 10),
-            Expanded(
+            SizedBox(
+              width: width,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     work.title,

@@ -49,7 +49,24 @@ class _EditionsScreenState extends State<EditionsScreen> {
     return Consumer<EditionsProvider>(
       builder: (context, provider, _) {
         return Scaffold(
-          appBar: AppBar(title: Text("Editions of ${widget.title}")),
+          appBar: AppBar(
+            title: Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 40),
+                child: Text(
+                  "Editions of ${widget.title}",
+                  style: TextStyle(
+                    fontFamily: "Cinzel",
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis, // still trims if > 2 lines
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
           body: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Builder(
@@ -163,7 +180,7 @@ class EditionCard extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: coverId != null
                 ? Image.network(
-                    OpenLibraryApi.getCoverUrl(coverId!, size: "M"),
+                    OpenLibraryApi.getCoverUrl(coverId!, size: "S"),
                     fit: BoxFit.cover,
                   )
                 : const Icon(Icons.book, size: 40, color: Colors.grey),
@@ -201,7 +218,7 @@ class EditionCard extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    backgroundColor: Colors.grey[300],
+                    backgroundColor: Colors.deepPurple[100],
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,

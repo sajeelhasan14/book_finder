@@ -1,39 +1,36 @@
 import 'package:book_finder/core/constant.dart';
-import 'package:book_finder/models/book_work.dart';
-
+import 'package:book_finder/models/subject_model.dart';
 import 'package:book_finder/providers/book_provider.dart';
+import 'package:book_finder/providers/subject_provider.dart';
 import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
-
 import 'package:book_finder/widgets/chips.dart';
 import 'package:book_finder/widgets/elevated_button.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class WorkDetailScreen extends StatefulWidget {
-  final BookWork work;
-
-  const WorkDetailScreen({required this.work, super.key});
+class SubjectWorkDetailScreen extends StatefulWidget {
+  final Works work;
+  const SubjectWorkDetailScreen({required this.work, super.key});
 
   @override
-  State<WorkDetailScreen> createState() => _WorkDetailScreenState();
+  State<SubjectWorkDetailScreen> createState() =>
+      _SubjectWorkDetailScreenState();
 }
 
-class _WorkDetailScreenState extends State<WorkDetailScreen> {
-  @override
+class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
   void initState() {
     super.initState();
 
     // Clean the work key before passing it
-    final cleanWorkId = widget.work.key.replaceAll(RegExp(r'^/works/'), '');
+    final cleanWorkId = widget.work.key?.replaceAll(RegExp(r'^/works/'), '');
 
     // Fetch detail data using the cleaned ID
     Future.microtask(
       () => Provider.of<BookProvider>(
         context,
         listen: false,
-      ).fetchDetailData(workId: cleanWorkId),
+      ).fetchDetailData(workId: cleanWorkId!),
     );
   }
 
@@ -56,7 +53,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
           mainAxisSize: MainAxisSize.min, // Important: shrink the column
           children: [
             Text(
-              widget.work.title,
+              widget.work.title ?? 'No Title',
               style: TextStyle(
                 fontFamily: "Cinzel",
                 fontSize: 20,
@@ -66,7 +63,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
               textAlign: TextAlign.center,
             ),
             Text(
-              "by ${widget.work.authors[0]}",
+              "by ${widget.work.authors!.first.name ?? 'Unknown'}",
               style: TextStyle(
                 fontFamily: "Cinzel",
                 fontSize: 14,
@@ -117,7 +114,9 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ChipWidget(text: widget.work.authors[0]),
+                  ChipWidget(
+                    text: widget.work.authors!.first.name ?? 'Unknown',
+                  ),
                   SizedBox(width: 20),
                   ChipWidget(
                     text: widget.work.firstPublishYear.toString(),
@@ -172,7 +171,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => EditionsScreen(
-                        workId: widget.work.key.replaceAll(
+                        workId: widget.work.key!.replaceAll(
                           RegExp(r'^/works/'),
                           '',
                         ),

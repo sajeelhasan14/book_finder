@@ -1,89 +1,89 @@
-// lib/providers/search_provider.dart
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:book_finder/models/book_work.dart';
 import 'package:book_finder/repositories/book_repository.dart';
 
-// 📌 Enum to represent the data state in UI
-enum DataState { idle, loading, data, empty, error }
+enum FilterType { all, title, author, isbn }
 
-class SearchProvider extends ChangeNotifier {
-  // Current state of search
-  DataState state = DataState.idle;
-  String errorMessage = '';
+class SearchProvider with ChangeNotifier {
+  String _query = '';
+  FilterType _filter = FilterType.all;
+  List<BookWork> _results = [];
+  int _page = 1;
+  bool _isLoading = false;
+  bool _hasMore = true;
+  String? _error;
 
-  // Search results
-  List<BookWork> works = [];
-  int page = 1;
-  int limit = 20;
-  int totalFound = 0;
-  bool isLoadingMore = false;
-  String currentQuery = '';
+  Timer? _debounce;
 
-  // 🔎 Perform search query (reset = true means new search)
-  Future<void> search(String query, {bool reset = true}) async {
-    if (query.trim().isEmpty) return;
+  // Getters
+  String get query => _query;
+  FilterType get filter => _filter;
+  List<BookWork> get results => _results;
+  bool get isLoading => _isLoading;
+  bool get hasMore => _hasMore;
+  String? get error => _error;
 
-    if (reset) {
-      state = DataState.loading;
-      works = [];
-      page = 1;
-      totalFound = 0;
-      currentQuery = query;
-      notifyListeners();
+  // Update search query with debounce
+  void updateQuery(String value) {
+    _query = value;
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _resetAndSearch();
+    });
+    notifyListeners();
+  }
+
+  void updateFilter(FilterType f) {
+    _filter = f;
+    _resetAndSearch();
+  }
+
+  Future<void> _resetAndSearch() async {
+    _results = [];
+    _page = 1;
+    _hasMore = true;
+    notifyListeners();
+    if (_query.isNotEmpty) {
+      await fetchBooks();
     }
+  }
+
+  Future<void> fetchBooks() async {
+    if (_isLoading || !_hasMore || _query.isEmpty) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
 
     try {
-      final result = await BookRepository.search(query, page: page, limit: limit);
-      final fetched = result['works'] as List<BookWork>;
-      final found = result['numFound'] as int;
+      final resp = await BookRepository.search(_query, page: _page, limit: 20);
+      final works = resp['works'] as List<BookWork>;
+      final numFound = resp['numFound'] as int;
 
-      if (fetched.isEmpty && page == 1) {
-        state = DataState.empty; // No results
+      if (_page == 1) {
+        _results = works;
       } else {
-        works.addAll(fetched);
-        totalFound = found;
-        state = DataState.data; // Successfully got data
+        _results.addAll(works);
       }
+
+      _hasMore = _results.length < numFound;
+      _page++;
     } catch (e) {
-      errorMessage = e.toString();
-      state = DataState.error; // Error state
+      _error = 'An error occurred while searching. Please try again.';
     }
 
+    _isLoading = false;
     notifyListeners();
   }
 
-  // ℹ️ Check if more results are available
-  bool get hasMore => works.length < totalFound;
-
-  // 📥 Load next page of results
-  Future<void> loadMore() async {
-    if (!hasMore || isLoadingMore) return;
-
-    isLoadingMore = true;
-    page += 1;
-    notifyListeners();
-
-    try {
-      final result = await BookRepository.search(currentQuery, page: page, limit: limit);
-      final fetched = result['works'] as List<BookWork>;
-      works.addAll(fetched);
-    } catch (e) {
-      // Ignore pagination errors but record the message
-      errorMessage = e.toString();
-    } finally {
-      isLoadingMore = false;
-      notifyListeners();
-    }
+  void retry() {
+    _resetAndSearch();
   }
 
-  // 🧹 Clear search state
-  void clear() {
-    state = DataState.idle;
-    works = [];
-    currentQuery = '';
-    page = 1;
-    totalFound = 0;
-    errorMessage = '';
-    notifyListeners();
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 }

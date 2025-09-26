@@ -1,4 +1,5 @@
 import 'package:book_finder/screens/search/search_screen.dart';
+import 'package:book_finder/screens/subjects/subject_screen.dart';
 import 'package:flutter/material.dart';
 
 class SubjectChip extends StatelessWidget {
@@ -16,10 +17,14 @@ class SubjectChip extends StatelessWidget {
         itemBuilder: (context, idx) {
           final s = labels[idx];
           return GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => SearchScreen(initialQuery: s)),
-            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SubjectScreen(subject: s.toLowerCase().replaceAll(' ', '_')),
+                ),
+              );
+            },
             child: Container(
               width: 160,
               margin: const EdgeInsets.only(right: 12),

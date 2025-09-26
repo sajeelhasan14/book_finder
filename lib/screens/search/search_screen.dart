@@ -1,9 +1,9 @@
-// lib/screens/search/search_screen.dart
+import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_finder/providers/search_provider.dart';
 import 'package:book_finder/widgets/book_card.dart';
-import 'package:book_finder/screens/work_detail/work_detail_screen.dart';
+import 'package:book_finder/widgets/book_card_skeleton.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
@@ -14,101 +14,148 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  late final TextEditingController _controller;
-  late final ScrollController _scrollController;
+  final ScrollController _scrollController = ScrollController();
+  late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.initialQuery ?? '');
-    _scrollController = ScrollController()..addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final prov = Provider.of<SearchProvider>(context, listen: false);
-      if ((widget.initialQuery ?? '').isNotEmpty) {
-        prov.search(widget.initialQuery!, reset: true);
+    final provider = context.read<SearchProvider>();
+    _searchController = TextEditingController(text: widget.initialQuery ?? "");
+    if (widget.initialQuery != null && widget.initialQuery!.isNotEmpty) {
+      Future.microtask(() {
+        context.read<SearchProvider>().updateQuery(widget.initialQuery!);
+      });
+    }
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          provider.hasMore &&
+          !provider.isLoading) {
+        provider.fetchBooks();
       }
     });
   }
 
-  void _onScroll() {
-    final prov = Provider.of<SearchProvider>(context, listen: false);
-    if (!_scrollController.hasClients) return;
-    if (_scrollController.position.extentAfter < 200) prov.loadMore();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _doSearch() {
-    final q = _controller.text.trim();
-    if (q.isEmpty) return;
-    Provider.of<SearchProvider>(context, listen: false).search(q, reset: true);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          onSubmitted: (_) => _doSearch(),
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            hintText: 'Search...',
-          ),
-        ),
-        actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: _doSearch),
-        ],
-      ),
-      body: Consumer<SearchProvider>(
-        builder: (context, prov, _) {
-          if (prov.state == DataState.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (prov.state == DataState.error) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Error: ${prov.errorMessage}'),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () =>
-                        prov.search(_controller.text.trim(), reset: true),
-                    child: const Text('Retry'),
+    return Consumer<SearchProvider>(
+      builder: (context, provider, _) {
+        return Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: Column(
+              children: [
+                // 🔍 Search bar
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  color: Colors.white,
+                  child: TextField(
+                    onChanged: provider.updateQuery,
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: provider.query.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () => provider.updateQuery(''),
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            );
-          }
-          if (prov.state == DataState.empty) {
-            return const Center(child: Text('No results found'));
-          }
-          if (prov.state == DataState.data || prov.state == DataState.idle) {
-            return ListView.builder(
-              controller: _scrollController,
-              itemCount: prov.works.length + (prov.hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < prov.works.length) {
-                  final w = prov.works[index];
-                  return BookCard(work: w);
-                } else {
-                  return const Padding(
-                    padding: EdgeInsets.all(12),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-              },
-            );
-          }
-          return const Center(child: Text('Type a query to start'));
-        },
-      ),
+                ),
+
+                // 🔖 Filter chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: FilterType.values.map((f) {
+                      final label =
+                          f.name[0].toUpperCase() + f.name.substring(1);
+                      final isSelected = provider.filter == f;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          selected: isSelected,
+                          selectedColor: Colors.deepPurple,
+                          backgroundColor: Colors.grey[200],
+                          label: Text(
+                            label,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                          onSelected: (_) => provider.updateFilter(f),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                // 📚 Results
+                Expanded(
+                  child: Builder(
+                    builder: (_) {
+                      if (provider.error != null) {
+                        return ErrorStateWidget(
+                          message: provider.error!,
+                          onRetry: provider.retry,
+                        );
+                      }
+                      if (!provider.isLoading &&
+                          provider.results.isEmpty &&
+                          provider.query.isNotEmpty) {
+                        return EmptyStateWidget(
+                          message: 'No results found for "${provider.query}".',
+                        );
+                      }
+                      if (provider.results.isEmpty && provider.query.isEmpty) {
+                        return const EmptyStateWidget(
+                          message: 'Start typing to find a book.',
+                        );
+                      }
+
+                      return GridView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(12),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                              childAspectRatio: 0.65,
+                            ),
+                        itemCount:
+                            provider.results.length +
+                            (provider.isLoading ? 6 : 0),
+                        itemBuilder: (context, index) {
+                          if (index < provider.results.length) {
+                            final book = provider.results[index];
+                            return BookCard(work: book);
+                          } else {
+                            return const BookCardSkeleton();
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

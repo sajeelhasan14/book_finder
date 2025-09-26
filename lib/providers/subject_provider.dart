@@ -1,4 +1,5 @@
 // lib/providers/subject_provider.dart
+import 'package:book_finder/models/subject_model.dart';
 import 'package:flutter/material.dart';
 import 'package:book_finder/repositories/subject_repository.dart';
 import 'package:book_finder/models/book_work.dart';
@@ -11,7 +12,7 @@ class SubjectProvider extends ChangeNotifier {
   SubjectState state = SubjectState.idle; // Initial state
   String? errorMessage;                   // Stores error message if something fails
   String? subjectName;                    // Name of the subject loaded from API
-  List<BookWork> works = [];              // List of works under the subject
+  List<Works> works = [];              // List of works under the subject
 
   // Load subject details and works from repository
   Future<void> loadSubject(String subjectSlug) async {
@@ -25,7 +26,7 @@ class SubjectProvider extends ChangeNotifier {
       final result = await SubjectRepository.getSubject(subjectSlug);
 
       subjectName = result['subject'] as String?;      // Extract subject name
-      works = result['works'] as List<BookWork>;       // Extract works list
+      works = result['works'] as List<Works>;      // Extract works list
 
       state = SubjectState.data;       // ✅ Success
     } catch (e) {
