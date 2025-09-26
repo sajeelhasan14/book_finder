@@ -21,7 +21,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       SearchScreen(),
       FavoriteScreen(),
       SettingsScreen(),
-      const Center(child: Text("Profile Page")),
     ];
     return Scaffold(
       body: pages[Provider.of<BottomNavigationProvider>(context).currentIndex],
@@ -46,7 +45,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             icon: Icon(Icons.settings),
             label: "Settings",
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );
