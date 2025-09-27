@@ -204,28 +204,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
             auth.isSignedIn
                 ? (favProv.favorites.isNotEmpty
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: favProv.favorites.length,
-                          itemBuilder: (ctx, idx) {
-                            final f = favProv.favorites[idx];
-                            final work = BookWork(
-                              key: f['key'] ?? '',
-                              title: f['title'] ?? 'Untitled',
-                              authors:
-                                  (f['authors'] as List<dynamic>?)
-                                      ?.map((e) => e.toString())
-                                      .toList() ??
-                                  [],
-                              coverId: f['coverId'],
-                              firstPublishYear: f['firstPublishYear'],
-                            );
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: BookCard(work: work),
-                            );
-                          },
+                      ? SizedBox(
+                          height: 250, // give some height for BookCard
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: favProv.favorites.length,
+                            itemBuilder: (ctx, idx) {
+                              final f = favProv.favorites[idx];
+                              final work = BookWork(
+                                key: f['key'] ?? '',
+                                title: f['title'] ?? 'Untitled',
+                                authors:
+                                    (f['authors'] as List<dynamic>?)
+                                        ?.map((e) => e.toString())
+                                        .toList() ??
+                                    [],
+                                coverId: f['coverId'],
+                                firstPublishYear: f['firstPublishYear'],
+                              );
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: BookCard(work: work),
+                              );
+                            },
+                          ),
                         )
                       : const Center(
                           child: Padding(

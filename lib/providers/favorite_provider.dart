@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:book_finder/services/favorite_service.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FavoriteProvider with ChangeNotifier {
@@ -11,8 +10,6 @@ class FavoriteProvider with ChangeNotifier {
   String? _uid;
 
   List<Map<String, dynamic>> get favorites => _favorites;
-
-  FavoriteProvider();
 
   /// Call this whenever auth changes (login/logout)
   void setUser(User? user) {

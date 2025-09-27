@@ -48,9 +48,11 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
           )
         : null;
     final provider = Provider.of<BookProvider>(context);
+    final favProvider = Provider.of<FavoriteProvider>(context);
     final detail = provider.detailData;
     final subjects = detail?.subjects ?? [];
     final authorid = detail?.authorKeys[0];
+    final isFav = favProvider.isFavorite(widget.work.key);
 
     return Scaffold(
       appBar: AppBar(
@@ -213,16 +215,15 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
               ),
               const SizedBox(height: 9),
               ElevatedButtonWidget(
-                text: "Save Favorite",
-                icon: Icon(Icons.favorite, size: 18, color: Colors.white),
+                text: isFav ? "Remove Favorite" : "Save Favorite",
+                icon: Icon(
+                  isFav ? Icons.favorite : Icons.favorite_border,
+                  size: 18,
+                  color: Colors.white,
+                ),
                 onTap: () {
-                  final favProvider = Provider.of<FavoriteProvider>(
-                    context,
-                    listen: false,
-                  );
-
                   favProvider.toggleFavorite(
-                    key: widget.work.key,
+                    key: widget.work.key.replaceAll(RegExp(r'^/works/'), ''),
                     title: widget.work.title,
                     coverId: widget.work.coverId,
                     authors: widget.work.authors,
