@@ -18,7 +18,7 @@ class EditionsProvider extends ChangeNotifier {
 
   // Main method to load editions (fresh load or reset if needed)
   Future<void> loadEditions(String workId, {bool reset = true}) async {
-    print(editions);
+    
     if (reset) {
       state = EditionsState.loading; // ✅ UI will show loader
       editions = []; // Clear previous editions
