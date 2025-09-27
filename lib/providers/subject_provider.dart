@@ -2,37 +2,35 @@
 import 'package:book_finder/models/subject_model.dart';
 import 'package:flutter/material.dart';
 import 'package:book_finder/repositories/subject_repository.dart';
-import 'package:book_finder/models/book_work.dart';
-
-// Enum for different states of subject loading
-// ✅ Keeps UI updates simple (idle, loading, data, error).
-enum SubjectState { idle, loading, data, error }
 
 class SubjectProvider extends ChangeNotifier {
-  SubjectState state = SubjectState.idle; // Initial state
-  String? errorMessage;                   // Stores error message if something fails
-  String? subjectName;                    // Name of the subject loaded from API
-  List<Works> works = [];              // List of works under the subject
+  bool isLoading = false;             // Loader flag
+  bool hasError = false;              // Error flag
+  String? errorMessage;               // Stores error message if something fails
+  String? subjectName;                // Name of the subject loaded from API
+  List<Works> works = [];             // List of works under the subject
 
   // Load subject details and works from repository
   Future<void> loadSubject(String subjectSlug) async {
-    state = SubjectState.loading;   // ✅ Show loader in UI
+    isLoading = true;
+    hasError = false;
     errorMessage = null;
-    works = [];                     // Reset previous works
-    notifyListeners();              // Inform UI of state change
+    works = []; // Reset previous works
+    notifyListeners();
 
     try {
-      // Call repository to get subject info + works
       final result = await SubjectRepository.getSubject(subjectSlug);
 
-      subjectName = result['subject'] as String?;      // Extract subject name
-      works = result['works'] as List<Works>;      // Extract works list
+      subjectName = result['subject'] as String?;
+      works = result['works'] as List<Works>;
 
-      state = SubjectState.data;       // ✅ Success
+      isLoading = false;
     } catch (e) {
-      errorMessage = e.toString();     // Capture error for UI
-      state = SubjectState.error;      // Switch to error state
+      errorMessage = e.toString();
+      hasError = true;
+      isLoading = false;
     }
-    notifyListeners();                 // Notify listeners for final state
+
+    notifyListeners(); // Final update for UI
   }
 }

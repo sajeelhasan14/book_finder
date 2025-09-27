@@ -2,6 +2,7 @@ import 'package:book_finder/core/constant.dart';
 import 'package:book_finder/models/book_work.dart';
 
 import 'package:book_finder/providers/book_provider.dart';
+import 'package:book_finder/screens/author/author_detail_screen.dart';
 import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
 
@@ -48,6 +49,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     final provider = Provider.of<BookProvider>(context);
     final detail = provider.detailData;
     final subjects = detail?.subjects ?? [];
+    final authorid = detail?.authorKeys[0];
 
     return Scaffold(
       appBar: AppBar(
@@ -56,22 +58,12 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
           mainAxisSize: MainAxisSize.min, // Important: shrink the column
           children: [
             Text(
-              widget.work.title,
+              "Book Details",
               style: TextStyle(
                 fontFamily: "Cinzel",
-                fontSize: 20,
+                fontSize: 25,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2D2D2D),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              "by ${widget.work.authors[0]}",
-              style: TextStyle(
-                fontFamily: "Cinzel",
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey[700],
               ),
               textAlign: TextAlign.center,
             ),
@@ -114,10 +106,46 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                 ),
               ),
               const SizedBox(height: 30),
+              Center(
+                child: Text(
+                  widget.work.title,
+                  style: TextStyle(
+                    fontFamily: "Cinzel",
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D2D2D),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Center(
+                child: Text(
+                  "by ${widget.work.authors[0]}",
+                  style: TextStyle(
+                    fontFamily: "Cinzel",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey[700],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ChipWidget(text: widget.work.authors[0]),
+                  ChipWidget(
+                    text: widget.work.authors[0],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AuthorDetailScreen(authorId: authorid!),
+                        ),
+                      );
+                    },
+                  ),
                   SizedBox(width: 20),
                   ChipWidget(
                     text: widget.work.firstPublishYear.toString(),

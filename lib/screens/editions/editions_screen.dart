@@ -56,10 +56,11 @@ class _EditionsScreenState extends State<EditionsScreen> {
                 child: Text(
                   "Editions of ${widget.title}",
                   style: TextStyle(
+                    fontSize: 16,
                     fontFamily: "Cinzel",
                     fontWeight: FontWeight.bold,
                   ),
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis, // still trims if > 2 lines
                   softWrap: true,
                   textAlign: TextAlign.center,

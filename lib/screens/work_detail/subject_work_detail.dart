@@ -1,7 +1,8 @@
 import 'package:book_finder/core/constant.dart';
 import 'package:book_finder/models/subject_model.dart';
 import 'package:book_finder/providers/book_provider.dart';
-import 'package:book_finder/providers/subject_provider.dart';
+
+import 'package:book_finder/screens/author/author_detail_screen.dart';
 import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
 import 'package:book_finder/widgets/chips.dart';
@@ -45,6 +46,9 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
     final provider = Provider.of<BookProvider>(context);
     final detail = provider.detailData;
     final subjects = detail?.subjects ?? [];
+    final authorid = (detail != null && detail.authorKeys.isNotEmpty)
+        ? detail.authorKeys.first
+        : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -116,6 +120,15 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
                 children: [
                   ChipWidget(
                     text: widget.work.authors!.first.name ?? 'Unknown',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AuthorDetailScreen(authorId: authorid!),
+                        ),
+                      );
+                    },
                   ),
                   SizedBox(width: 20),
                   ChipWidget(

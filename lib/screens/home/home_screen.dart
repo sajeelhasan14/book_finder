@@ -1,9 +1,6 @@
-// lib/screens/home/home_screen.dart
-import 'package:book_finder/core/constant.dart';
 import 'package:book_finder/providers/book_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/screens/auth/signup_screen.dart';
-import 'package:book_finder/services/open_library_api.dart';
 import 'package:book_finder/widgets/popular_subject_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';

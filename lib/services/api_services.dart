@@ -6,26 +6,25 @@ class ApiService {
   static const String coversBaseUrl = ApiConstants.coversBaseUrl;
 
   // ---------- SEARCH ----------
-  // Example: /search.json?q=harry+potter 
+  // Example: /search.json?q=harry+potter
   static const String search = "$baseUrl/search.json";
 
   // ---------- WORKS ----------
   // Example: /works/OL45883W.json (for detailed book info)
-   static String workDetails(String id) => "$baseUrl/works/$id.json";
+  static String workDetails(String id) => "$baseUrl/works/$id.json";
 
   // Editions for a work
   // Example: /works/OL45883W/editions.json?limit=20&offset=0
- static String workEditions(String id, {int limit = 20, int offset = 0}) =>
+  static String workEditions(String id, {int limit = 20, int offset = 0}) =>
       "$baseUrl/works/$id/editions.json?limit=$limit&offset=$offset";
 
   // ---------- AUTHORS ----------
   // Example: /authors/OL23919A.json
-  static String authorDetails(String id) =>
-      "$baseUrl/authors/$id.json";
+  static String authorDetails(String id) => "$baseUrl/authors/$id.json";
 
   // Author works
   // Example: /authors/OL23919A/works.json?limit=50&offset=0
-   static String authorWorks(String id, {int limit = 50, int offset = 0}) =>
+  static String authorWorks(String id, {int limit = 50, int offset = 0}) =>
       "$baseUrl/authors/$id/works.json?limit=$limit&offset=$offset";
 
   // ---------- SUBJECTS ----------
@@ -43,10 +42,8 @@ class ApiService {
 
   // Example: https://covers.openlibrary.org/a/olid/{authorId}-M.jpg
   static String authorPhoto(String authorId, {String? size}) =>
-      "$coversBaseUrl/a/olid/$authorId-${size ?? ApiConstants.defaultCoverSize}.jpg";
+      "$coversBaseUrl/b/id/$authorId-${size ?? ApiConstants.defaultCoverSize}.jpg";
 
   // 🔥 Trending
   static const String trending = "$baseUrl/trending/daily.json";
-
-  
 }
