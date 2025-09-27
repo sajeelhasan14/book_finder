@@ -4,12 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  User? get user => _auth.currentUser;
-  bool get isSignedIn => user != null;
+  User? _user;
+  bool _isLoading = true;
+
+  User? get user => _user;
+  bool get isSignedIn => _user != null;
+  bool get isLoading => _isLoading;
 
   AuthProvider() {
-    // Listen to auth state changes and notify listeners
-    _auth.authStateChanges().listen((_) {
+    // Listen to auth state changes
+    _auth.authStateChanges().listen((user) {
+      _user = user;
+      _isLoading = false;
       notifyListeners();
     });
   }

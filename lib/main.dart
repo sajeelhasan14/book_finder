@@ -45,9 +45,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: true);
+    final authProvider = Provider.of<AuthProvider>(context);
 
-    // ab yahan providers available hain
+    // 🔹 Show loading screen while Firebase restores auth state
+    if (authProvider.isLoading) {
+      return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
+
+    // 🔹 Once loading done, show correct screen
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: authProvider.isSignedIn
