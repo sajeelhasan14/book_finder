@@ -45,12 +45,21 @@ class _HomeScreenState extends State<HomeScreen> {
         listen: false,
       ).fetchTrending(limit: 10),
     );
+
+    Future.microtask(() {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final favProvider = Provider.of<FavoriteProvider>(context, listen: false);
+
+      if (authProvider.isSignedIn) {
+        favProvider.setUser(authProvider.user);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    final favProv = Provider.of<FavoritesProvider>(context);
+    final favProv = Provider.of<FavoriteProvider>(context);
     final bookProvider = Provider.of<BookProvider>(context);
 
     return Scaffold(

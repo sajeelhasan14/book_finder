@@ -1,44 +1,69 @@
-// lib/providers/favorites_provider.dart
 import 'dart:async';
-
+import 'package:book_finder/services/favorite_service.dart';
 import 'package:flutter/material.dart';
-import 'package:book_finder/repositories/favorites_repository.dart';
-import 'package:book_finder/providers/auth_provider.dart';
 
-class FavoritesProvider extends ChangeNotifier {
-  final FavoritesRepository _repo = FavoritesRepository(); // Repo to interact with Firestore
-  List<Map<String, dynamic>> favorites = [];               // Local cache of favorites
-  String? uid;                                             // Current signed-in user ID
-    StreamSubscription<List<Map<String, dynamic>>>? subscription;                                  // Firestore subscription
+import 'package:firebase_auth/firebase_auth.dart';
 
-  // Called when authentication changes (login/logout)
-  void updateForAuth(AuthProvider auth) {
-    if (auth.user == null) {
-      // User logged out → clear local favorites
-      favorites = [];
-      uid = null;
-      notifyListeners();
+class FavoriteProvider with ChangeNotifier {
+  final FavoriteService _service = FavoriteService();
+  List<Map<String, dynamic>> _favorites = [];
+  StreamSubscription? _subscription;
+  String? _uid;
+
+  List<Map<String, dynamic>> get favorites => _favorites;
+
+  FavoriteProvider();
+
+  /// Call this whenever auth changes (login/logout)
+  void setUser(User? user) {
+    _subscription?.cancel();
+    _uid = user?.uid;
+
+    if (_uid != null) {
+      _listenToFavorites();
     } else {
-      // User logged in → start listening to Firestore favorites
-      uid = auth.user!.uid;
-      subscription = _repo.streamFavorites(uid!).listen((list) {
-        favorites = list;  // Update local list whenever Firestore changes
-        notifyListeners(); // Notify UI
-      });
+      _favorites = [];
+      notifyListeners();
     }
   }
 
-  // Add a book to favorites
-  Future<void> addFavorite(Map<String, dynamic> payload) async {
-    if (uid == null) throw Exception('Not signed in');
-    // Store timestamp when added
-    payload['addedAt'] = DateTime.now().toIso8601String();
-    await _repo.addFavorite(uid!, payload);
+  void _listenToFavorites() {
+    _subscription = _service.getUserFavorites(_uid!).listen((data) {
+      _favorites = data;
+      notifyListeners();
+    });
   }
 
-  // Remove a book from favorites
-  Future<void> removeFavorite(String workKey) async {
-    if (uid == null) throw Exception('Not signed in');
-    await _repo.removeFavorite(uid!, workKey);
+  bool isFavorite(String key) {
+    return _favorites.any((fav) => fav['key'] == key);
+  }
+
+  Future<void> toggleFavorite({
+    required String key,
+    required String title,
+    int? coverId,
+    List<String>? authors,
+    int? firstPublishYear,
+  }) async {
+    if (_uid == null) return;
+
+    if (isFavorite(key)) {
+      await _service.removeFromFavorites(uid: _uid!, key: key);
+    } else {
+      await _service.addToFavorites(
+        uid: _uid!,
+        key: key,
+        title: title,
+        coverId: coverId,
+        authors: authors,
+        firstPublishYear: firstPublishYear,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

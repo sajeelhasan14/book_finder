@@ -2,6 +2,7 @@ import 'package:book_finder/core/constant.dart';
 import 'package:book_finder/models/book_work.dart';
 
 import 'package:book_finder/providers/book_provider.dart';
+import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/screens/author/author_detail_screen.dart';
 import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
@@ -214,6 +215,20 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
               ElevatedButtonWidget(
                 text: "Save Favorite",
                 icon: Icon(Icons.favorite, size: 18, color: Colors.white),
+                onTap: () {
+                  final favProvider = Provider.of<FavoriteProvider>(
+                    context,
+                    listen: false,
+                  );
+
+                  favProvider.toggleFavorite(
+                    key: widget.work.key,
+                    title: widget.work.title,
+                    coverId: widget.work.coverId,
+                    authors: widget.work.authors,
+                    firstPublishYear: widget.work.firstPublishYear,
+                  );
+                },
               ),
             ],
           ),
