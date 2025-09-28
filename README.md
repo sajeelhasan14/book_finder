@@ -1,16 +1,26 @@
-# book_finder
+# Book_Finder
 
-A new Flutter project.
-
-## Getting Started
+## Project Mockups
 
 This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshots
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+<table>
+  <tr>
+    <td><img src="assets/screenshots/screen1.png" width="200"/></td>
+    <td><img src="assets/screenshots/screen2.png" width="200"/></td>
+    <td><img src="assets/screenshots/screen3.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/screen4.png" width="200"/></td>
+    <td><img src="assets/screenshots/screen5.png" width="200"/></td>
+    <td><img src="assets/screenshots/screen6.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/screen7.png" width="200"/></td>
+    <td><img src="assets/screenshots/screen8.png" width="200"/></td>
+    <td><img src="assets/screenshots/screen9.png" width="200"/></td>
+  </tr>
+</table>
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
