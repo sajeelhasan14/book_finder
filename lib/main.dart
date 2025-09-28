@@ -1,4 +1,3 @@
-import 'package:book_finder/bottom_navigation.dart';
 import 'package:book_finder/providers/auth_provider.dart';
 import 'package:book_finder/providers/author_provider.dart';
 import 'package:book_finder/providers/book_provider.dart';
@@ -10,7 +9,7 @@ import 'package:book_finder/providers/settings_provider.dart';
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/providers/subject_provider.dart';
 import 'package:book_finder/providers/work_detail_provider.dart';
-import 'package:book_finder/screens/auth/login_screen.dart';
+import 'package:book_finder/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -45,22 +44,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    // 🔹 Show loading screen while Firebase restores auth state
-    if (authProvider.isLoading) {
-      return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
-      );
-    }
-
-    // 🔹 Once loading done, show correct screen
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: authProvider.isSignedIn
-          ? const BottomNavigationScreen()
-          : const LoginScreen(),
+      home: SplashScreen(), // ✅ Always start with SplashScreen
     );
   }
 }

@@ -12,6 +12,8 @@ class BookProvider extends ChangeNotifier {
 
   BookWorkModel? _detailData;
   BookWorkModel? get detailData => _detailData;
+
+  
   
 
   bool _isLoadingDetail = false;

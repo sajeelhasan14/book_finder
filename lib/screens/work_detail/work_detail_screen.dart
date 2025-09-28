@@ -48,11 +48,10 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
           )
         : null;
     final provider = Provider.of<BookProvider>(context);
-    final favProvider = Provider.of<FavoriteProvider>(context);
+
     final detail = provider.detailData;
     final subjects = detail?.subjects ?? [];
     final authorid = detail?.authorKeys[0];
-    final isFav = favProvider.isFavorite(widget.work.key);
 
     return Scaffold(
       appBar: AppBar(
@@ -207,6 +206,8 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                           RegExp(r'^/works/'),
                           '',
                         ),
+                        work: widget.work,
+
                         title: "${widget.work.title} Editions",
                       ),
                     ),
@@ -214,20 +215,33 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                 },
               ),
               const SizedBox(height: 9),
-              ElevatedButtonWidget(
-                text: isFav ? "Remove Favorite" : "Save Favorite",
-                icon: Icon(
-                  isFav ? Icons.favorite : Icons.favorite_border,
-                  size: 18,
-                  color: Colors.white,
-                ),
-                onTap: () {
-                  favProvider.toggleFavorite(
-                    key: widget.work.key.replaceAll(RegExp(r'^/works/'), ''),
-                    title: widget.work.title,
-                    coverId: widget.work.coverId,
-                    authors: widget.work.authors,
-                    firstPublishYear: widget.work.firstPublishYear,
+              Consumer<FavoriteProvider>(
+                builder: (context, favProvider, _) {
+                  final cleanKey = widget.work.key.replaceAll(
+                    RegExp(r'^/works/'),
+                    '',
+                  );
+                  final isFav = favProvider.isFavorite(cleanKey);
+
+                  return ElevatedButtonWidget(
+                    text: isFav ? "Remove Favorite" : "Save Favorite",
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      favProvider.toggleFavorite(
+                        key: widget.work.key.replaceAll(
+                          RegExp(r'^/works/'),
+                          '',
+                        ),
+                        title: widget.work.title,
+                        coverId: widget.work.coverId,
+                        authors: widget.work.authors,
+                        firstPublishYear: widget.work.firstPublishYear,
+                      );
+                    },
                   );
                 },
               ),

@@ -1,7 +1,8 @@
 import 'package:book_finder/bottom_navigation.dart';
-import 'package:book_finder/providers/auth_provider.dart';
+import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,14 +20,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigate() async {
-    // Give time for Firebase/AuthProvider to initialize
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = FirebaseAuth.instance.currentUser;
 
-    if (authProvider.isSignedIn) {
+    final favProvider = Provider.of<FavoriteProvider>(context, listen: false);
+
+    if (user != null) {
+      // 🔹 Set user BEFORE navigating to HomeScreen
+      favProvider.setUser(user);
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const BottomNavigationScreen()),
@@ -34,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const BottomNavigationScreen()),
       );
     }
   }
@@ -46,7 +51,12 @@ class _SplashScreenState extends State<SplashScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: Image.asset("images/Vector.png", height: 150, width: 150),
+            child: Image.asset(
+              "images/Vector.png",
+              height: 150,
+              width: 150,
+              color: Colors.deepPurple,
+            ),
           ),
           const SizedBox(height: 20),
           const Text(

@@ -1,13 +1,18 @@
+import 'package:book_finder/models/book_work.dart';
+import 'package:book_finder/models/subject_model.dart';
+import 'package:book_finder/screens/work_detail/work_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_finder/providers/editions_provider.dart';
 import 'package:book_finder/services/open_library_api.dart';
 
 class EditionsScreen extends StatefulWidget {
+  
+final BookWork work;
   final String workId;
   final String title;
 
-  const EditionsScreen({super.key, required this.workId, required this.title});
+  const EditionsScreen({super.key, required this.workId, required this.title,required this.work});
 
   @override
   State<EditionsScreen> createState() => _EditionsScreenState();
@@ -50,22 +55,18 @@ class _EditionsScreenState extends State<EditionsScreen> {
       builder: (context, provider, _) {
         return Scaffold(
           appBar: AppBar(
-            title: Flexible(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 40),
-                child: Text(
-                  "Editions of ${widget.title}",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: "Cinzel",
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis, // still trims if > 2 lines
-                  softWrap: true,
-                  textAlign: TextAlign.center,
-                ),
+            centerTitle: true,
+            title: Text(
+              "Book Editions",
+              style: TextStyle(
+                fontSize: 25,
+                fontFamily: "Cinzel",
+                fontWeight: FontWeight.bold,
               ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis, // still trims if > 2 lines
+              softWrap: true,
+              textAlign: TextAlign.center,
             ),
           ),
           body: Padding(
@@ -102,20 +103,25 @@ class _EditionsScreenState extends State<EditionsScreen> {
                           final ed = provider.editions[index];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
-                            child: EditionCard(
-                              title: ed.title ?? "Untitled",
-                              publisher:
-                                  (ed.publishers != null &&
-                                      ed.publishers!.isNotEmpty)
-                                  ? ed.publishers!.first
-                                  : "Unknown Publisher",
-                              year: ed.publishDate ?? "Unknown",
-                              language:
-                                  (ed.languages != null &&
-                                      ed.languages!.isNotEmpty)
-                                  ? ed.languages!.first
-                                  : null,
-                              coverId: ed.coverId,
+                            child: InkWell(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder:(context)=>WorkDetailScreen(work: widget.work)));
+                              },
+                              child: EditionCard(
+                                title: ed.title ?? "Untitled",
+                                publisher:
+                                    (ed.publishers != null &&
+                                        ed.publishers!.isNotEmpty)
+                                    ? ed.publishers!.first
+                                    : "Unknown Publisher",
+                                year: ed.publishDate ?? "Unknown",
+                                language:
+                                    (ed.languages != null &&
+                                        ed.languages!.isNotEmpty)
+                                    ? ed.languages!.first
+                                    : null,
+                                coverId: ed.coverId,
+                              ),
                             ),
                           );
                         } else {

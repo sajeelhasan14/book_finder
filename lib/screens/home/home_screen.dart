@@ -39,6 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Fetch trending books
     Future.microtask(
       () => Provider.of<BookProvider>(
         context,
@@ -46,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ).fetchTrending(limit: 10),
     );
 
+    // Initialize favorites if user is signed in
     Future.microtask(() {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final favProvider = Provider.of<FavoriteProvider>(context, listen: false);
@@ -59,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    final favProv = Provider.of<FavoriteProvider>(context);
     final bookProvider = Provider.of<BookProvider>(context);
 
     return Scaffold(
@@ -83,17 +85,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 📝 Subtitle
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: const Text(
+            // Subtitle
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
                 "Discover your next great read.",
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 20),
 
-            // 🔍 Search bar
+            // Search bar
             Container(
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
@@ -124,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24),
 
-            // 🎯 Popular Subjects
+            // Popular Subjects
             const Text(
               "Popular Subjects",
               style: TextStyle(
@@ -138,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SubjectChip(labels: subjects),
             const SizedBox(height: 28),
 
-            // 📌 Trending Section
+            // Trending Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -183,14 +185,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: bookProvider.trending.length,
                       itemBuilder: (context, index) {
                         final work = bookProvider.trending[index];
-
                         return BookCard(work: work);
                       },
                     ),
             ),
             const SizedBox(height: 28),
 
-            // ❤️ Favorites
+            // Favorites Section
             const Text(
               "Your Favorites",
               style: TextStyle(
@@ -202,88 +203,100 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 12),
 
-            auth.isSignedIn
-                ? (favProv.favorites.isNotEmpty
-                      ? SizedBox(
-                          height: 250, // give some height for BookCard
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: favProv.favorites.length,
-                            itemBuilder: (ctx, idx) {
-                              final f = favProv.favorites[idx];
-                              final work = BookWork(
-                                key: f['key'] ?? '',
-                                title: f['title'] ?? 'Untitled',
-                                authors:
-                                    (f['authors'] as List<dynamic>?)
-                                        ?.map((e) => e.toString())
-                                        .toList() ??
-                                    [],
-                                coverId: f['coverId'],
-                                firstPublishYear: f['firstPublishYear'],
-                              );
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: BookCard(work: work),
-                              );
-                            },
-                          ),
-                        )
-                      : const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Text(
-                              'Your favorites list is empty.',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        ))
-                : Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(top: 8),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(16),
+            // Consumer ensures UI updates when favorites change
+            Consumer<FavoriteProvider>(
+              builder: (context, favProv, _) {
+                if (!auth.isSignedIn) {
+                  // User not signed in → show prompt
+                  return signInPrompt();
+                }
+
+                if (favProv.favorites.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Your favorites list is empty.',
+                      style: TextStyle(color: Colors.grey),
                     ),
-                    child: Column(
-                      children: [
-                        const Text(
-                          "Sign in to see your favorites and sync them across devices.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: 150,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF673AB7),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            onPressed: () => Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SignUpScreen(),
-                              ),
-                            ),
-                            child: const Text(
-                              "Sign In",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  );
+                }
+
+                // Display favorites
+                return SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: favProv.favorites.length,
+                    itemBuilder: (ctx, idx) {
+                      final f = favProv.favorites[idx];
+                      final work = BookWork(
+                        key: f['key'] ?? '',
+                        title: f['title'] ?? 'Untitled',
+                        authors:
+                            (f['authors'] as List<dynamic>?)
+                                ?.map((e) => e.toString())
+                                .toList() ??
+                            [],
+                        coverId: f['coverId'],
+                        firstPublishYear: f['firstPublishYear'],
+                      );
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: BookCard(work: work),
+                      );
+                    },
                   ),
+                );
+              },
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Widget to show prompt for unsigned users
+  Widget signInPrompt() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            "Sign in to see your favorites and sync them across devices.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.black87),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: 150,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF673AB7),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => SignUpScreen()),
+              ),
+              child: const Text(
+                "Sign In",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

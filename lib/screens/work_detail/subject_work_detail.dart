@@ -1,12 +1,15 @@
 import 'package:book_finder/core/constant.dart';
+import 'package:book_finder/models/book_work.dart';
 import 'package:book_finder/models/subject_model.dart';
 import 'package:book_finder/providers/book_provider.dart';
+import 'package:book_finder/providers/favorite_provider.dart';
 
 import 'package:book_finder/screens/author/author_detail_screen.dart';
 import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
 import 'package:book_finder/widgets/chips.dart';
 import 'package:book_finder/widgets/elevated_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -180,6 +183,13 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
               ElevatedButtonWidget(
                 text: "See Editions",
                 onTap: () {
+                  final bookWork = BookWork(
+                    key: widget.work.key ?? "",
+                    title: widget.work.title ?? "No Title",
+                    coverId: widget.work.coverId,
+                    firstPublishYear: widget.work.firstPublishYear,
+                    authors: [widget.work.authors.toString()],
+                  );
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -189,15 +199,42 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
                           '',
                         ),
                         title: "${widget.work.title} Editions",
+                        work: bookWork,
                       ),
                     ),
                   );
                 },
               ),
               const SizedBox(height: 9),
-              ElevatedButtonWidget(
-                text: "Save Favorite",
-                icon: Icon(Icons.favorite, size: 18, color: Colors.white),
+              Consumer<FavoriteProvider>(
+                builder: (context, favProvider, _) {
+                  final cleanKey = widget.work.key!.replaceAll(
+                    RegExp(r'^/works/'),
+                    '',
+                  );
+                  final isFav = favProvider.isFavorite(cleanKey);
+
+                  return ElevatedButtonWidget(
+                    text: isFav ? "Remove Favorite" : "Save Favorite",
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    onTap: () {
+                      favProvider.toggleFavorite(
+                        key: widget.work.key!.replaceAll(
+                          RegExp(r'^/works/'),
+                          '',
+                        ),
+                        title: widget.work.title ?? "No title available",
+                        coverId: widget.work.coverId,
+                        authors: [widget.work.authors.toString()],
+                        firstPublishYear: widget.work.firstPublishYear,
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),

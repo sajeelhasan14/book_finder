@@ -8,7 +8,8 @@ class SubjectProvider extends ChangeNotifier {
   bool hasError = false;              // Error flag
   String? errorMessage;               // Stores error message if something fails
   String? subjectName;                // Name of the subject loaded from API
-  List<Works> works = [];             // List of works under the subject
+  List<Works> works = [];  
+             // List of works under the subject
 
   // Load subject details and works from repository
   Future<void> loadSubject(String subjectSlug) async {
