@@ -13,6 +13,7 @@ class FavoriteScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           "Favorites",
           style: TextStyle(
@@ -50,9 +51,12 @@ class FavoriteScreen extends StatelessWidget {
                     key: f['key'] ?? '',
                     title: f['title'] ?? 'Untitled',
                     authors:
-                        (f['authors'] as List<dynamic>?)
-                            ?.map((e) => e.toString())
-                            .toList() ??
+                        (f['authors'] as List<dynamic>?)?.map((e) {
+                          if (e is Map && e.containsKey('name')) {
+                            return e['name'].toString();
+                          }
+                          return e.toString();
+                        }).toList() ??
                         [],
                     coverId: f['coverId'],
                     firstPublishYear: f['firstPublishYear'],
@@ -86,7 +90,12 @@ class FavoriteScreen extends StatelessWidget {
                         work.title,
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
-                      subtitle: Text(work.authors.join(", ")),
+                      subtitle: Text(
+                        work.authors.isNotEmpty
+                            ? work.authors.first.toString()
+                            : "Unknown Author",
+                      ),
+
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
@@ -97,6 +106,7 @@ class FavoriteScreen extends StatelessWidget {
                         },
                       ),
                       onTap: () {
+                        print(Text(work.authors[0]));
                         Navigator.push(
                           context,
                           MaterialPageRoute(

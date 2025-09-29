@@ -1,5 +1,4 @@
 import 'package:book_finder/models/book_work.dart';
-import 'package:book_finder/models/subject_model.dart';
 import 'package:book_finder/screens/work_detail/work_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

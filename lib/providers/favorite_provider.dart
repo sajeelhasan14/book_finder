@@ -47,12 +47,15 @@ class FavoriteProvider with ChangeNotifier {
     if (isFavorite(key)) {
       await _service.removeFromFavorites(uid: _uid!, key: key);
     } else {
+      // 🔥 Always ensure authors is saved as List<String>
+      final safeAuthors = authors?.map((e) => e.toString()).toList();
+
       await _service.addToFavorites(
         uid: _uid!,
         key: key,
         title: title,
         coverId: coverId,
-        authors: authors,
+        authors: safeAuthors,
         firstPublishYear: firstPublishYear,
       );
     }

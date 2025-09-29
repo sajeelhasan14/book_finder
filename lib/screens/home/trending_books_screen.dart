@@ -1,43 +1,53 @@
 import 'package:book_finder/core/constant.dart';
-import 'package:book_finder/providers/subject_provider.dart';
-import 'package:book_finder/screens/work_detail/subject_work_detail.dart';
+import 'package:book_finder/providers/book_provider.dart';
 
+import 'package:book_finder/screens/work_detail/work_detail_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-class SubjectScreen extends StatefulWidget {
-  final String subject;
-  const SubjectScreen({required this.subject, super.key});
+class TrendingBookScreen extends StatefulWidget {
+  static const routeName = '/';
+  const TrendingBookScreen({super.key});
 
   @override
-  State<SubjectScreen> createState() => _SubjectScreenState();
+  State<TrendingBookScreen> createState() => _TrendingBookScreenState();
 }
 
-class _SubjectScreenState extends State<SubjectScreen> {
+class _TrendingBookScreenState extends State<TrendingBookScreen> {
+  final TextEditingController ctrl = TextEditingController();
+
+  @override
+  void dispose() {
+    ctrl.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
+
+    // Fetch trending books
     Future.microtask(
-      () => Provider.of<SubjectProvider>(
+      () => Provider.of<BookProvider>(
         context,
         listen: false,
-      ).loadSubject(widget.subject),
+      ).fetchTrending(limit: 50),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<SubjectProvider>(context);
-    final subjectData = provider.works;
+    final bookProvider = Provider.of<BookProvider>(context);
+    final trending = bookProvider.trending;
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          widget.subject,
+          "Trending Books",
           style: TextStyle(
             fontFamily: "Cinzel",
             fontSize: 20,
@@ -46,7 +56,7 @@ class _SubjectScreenState extends State<SubjectScreen> {
           ),
         ),
       ),
-      body: provider.isLoading
+      body: bookProvider.isLoadingTrending
           ? const Center(
               child: SpinKitThreeBounce(color: Colors.deepPurple, size: 30),
             )
@@ -58,9 +68,9 @@ class _SubjectScreenState extends State<SubjectScreen> {
                 crossAxisSpacing: 12,
                 childAspectRatio: 0.60,
               ),
-              itemCount: subjectData.length,
+              itemCount: trending.length,
               itemBuilder: (context, index) {
-                final work = subjectData[index];
+                final work = trending[index];
                 final coverUrl = work.coverId != null
                     ? OpenLibraryApi.getCoverUrl(
                         work.coverId!,
@@ -72,7 +82,7 @@ class _SubjectScreenState extends State<SubjectScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => SubjectWorkDetailScreen(work: work),
+                        builder: (_) => WorkDetailScreen(work: work),
                       ),
                     );
                   },
@@ -118,7 +128,7 @@ class _SubjectScreenState extends State<SubjectScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  work.title ?? "No Title",
+                                  work.title,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
@@ -128,9 +138,8 @@ class _SubjectScreenState extends State<SubjectScreen> {
                                   ),
                                 ),
                                 Text(
-                                  (work.authors != null &&
-                                          work.authors!.isNotEmpty)
-                                      ? work.authors!.first.name ?? "Unknown"
+                                  work.authors.isNotEmpty
+                                      ? work.authors.first
                                       : "Unknown",
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,

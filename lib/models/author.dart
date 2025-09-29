@@ -2,10 +2,10 @@ class AuthorModel {
   String? name;
   Bio? bio;
   RemoteIds? remoteIds;
-  List<int>? photos;
-  List<String>? alternateNames;
-  List<Links>? links;
-  List<String>? sourceRecords;
+  List<int> photos;
+  List<String> alternateNames;
+  List<Links> links;
+  List<String> sourceRecords;
   String? entityType;
   String? birthDate;
   String? fullerName;
@@ -22,10 +22,10 @@ class AuthorModel {
     this.name,
     this.bio,
     this.remoteIds,
-    this.photos,
-    this.alternateNames,
-    this.links,
-    this.sourceRecords,
+    this.photos = const [],
+    this.alternateNames = const [],
+    this.links = const [],
+    this.sourceRecords = const [],
     this.entityType,
     this.birthDate,
     this.fullerName,
@@ -39,69 +39,59 @@ class AuthorModel {
     this.lastModified,
   });
 
-  AuthorModel.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    bio = json['bio'] != null ? Bio.fromJson(json['bio']) : null;
-    remoteIds = json['remote_ids'] != null
-        ? RemoteIds.fromJson(json['remote_ids'])
-        : null;
-    photos = json['photos'].cast<int>();
-    alternateNames = json['alternate_names'].cast<String>();
-    if (json['links'] != null) {
-      links = <Links>[];
-      json['links'].forEach((v) {
-        links!.add(Links.fromJson(v));
-      });
-    }
-    sourceRecords = json['source_records'].cast<String>();
-    entityType = json['entity_type'];
-    birthDate = json['birth_date'];
-    fullerName = json['fuller_name'];
-    title = json['title'];
-    type = json['type'] != null ? Type.fromJson(json['type']) : null;
-    personalName = json['personal_name'];
-    key = json['key'];
-    latestRevision = json['latest_revision'];
-    revision = json['revision'];
-    created = json['created'] != null ? Bio.fromJson(json['created']) : null;
-    lastModified = json['last_modified'] != null
-        ? Bio.fromJson(json['last_modified'])
-        : null;
-  }
+  AuthorModel.fromJson(Map<String, dynamic> json)
+    : name = json['name'],
+      bio = json['bio'] != null ? Bio.fromJson(json['bio']) : null,
+      remoteIds = json['remote_ids'] != null
+          ? RemoteIds.fromJson(json['remote_ids'])
+          : null,
+      photos = json['photos'] != null
+          ? List<int>.from(json['photos'])
+          : <int>[],
+      alternateNames = json['alternate_names'] != null
+          ? List<String>.from(json['alternate_names'])
+          : <String>[],
+      links = json['links'] != null
+          ? (json['links'] as List).map((v) => Links.fromJson(v)).toList()
+          : <Links>[],
+      sourceRecords = json['source_records'] != null
+          ? List<String>.from(json['source_records'])
+          : <String>[],
+      entityType = json['entity_type'],
+      birthDate = json['birth_date'],
+      fullerName = json['fuller_name'],
+      title = json['title'],
+      type = json['type'] != null ? Type.fromJson(json['type']) : null,
+      personalName = json['personal_name'],
+      key = json['key'],
+      latestRevision = json['latest_revision'],
+      revision = json['revision'],
+      created = json['created'] != null ? Bio.fromJson(json['created']) : null,
+      lastModified = json['last_modified'] != null
+          ? Bio.fromJson(json['last_modified'])
+          : null;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['name'] = name;
-    if (bio != null) {
-      data['bio'] = bio!.toJson();
-    }
-    if (remoteIds != null) {
-      data['remote_ids'] = remoteIds!.toJson();
-    }
-    data['photos'] = photos;
-    data['alternate_names'] = alternateNames;
-    if (links != null) {
-      data['links'] = links!.map((v) => v.toJson()).toList();
-    }
-    data['source_records'] = sourceRecords;
-    data['entity_type'] = entityType;
-    data['birth_date'] = birthDate;
-    data['fuller_name'] = fullerName;
-    data['title'] = title;
-    if (type != null) {
-      data['type'] = type!.toJson();
-    }
-    data['personal_name'] = personalName;
-    data['key'] = key;
-    data['latest_revision'] = latestRevision;
-    data['revision'] = revision;
-    if (created != null) {
-      data['created'] = created!.toJson();
-    }
-    if (lastModified != null) {
-      data['last_modified'] = lastModified!.toJson();
-    }
-    return data;
+    return {
+      'name': name,
+      if (bio != null) 'bio': bio!.toJson(),
+      if (remoteIds != null) 'remote_ids': remoteIds!.toJson(),
+      'photos': photos,
+      'alternate_names': alternateNames,
+      'links': links.map((v) => v.toJson()).toList(),
+      'source_records': sourceRecords,
+      'entity_type': entityType,
+      'birth_date': birthDate,
+      'fuller_name': fullerName,
+      'title': title,
+      if (type != null) 'type': type!.toJson(),
+      'personal_name': personalName,
+      'key': key,
+      'latest_revision': latestRevision,
+      'revision': revision,
+      if (created != null) 'created': created!.toJson(),
+      if (lastModified != null) 'last_modified': lastModified!.toJson(),
+    };
   }
 }
 
@@ -111,16 +101,12 @@ class Bio {
 
   Bio({this.type, this.value});
 
-  Bio.fromJson(Map<String, dynamic> json) {
-    type = json['type'];
-    value = json['value'];
-  }
+  Bio.fromJson(Map<String, dynamic> json)
+    : type = json['type'],
+      value = json['value'];
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['type'] = type;
-    data['value'] = value;
-    return data;
+    return {'type': type, 'value': value};
   }
 }
 
@@ -151,34 +137,33 @@ class RemoteIds {
     this.opacSbn,
   });
 
-  RemoteIds.fromJson(Map<String, dynamic> json) {
-    viaf = json['viaf'];
-    goodreads = json['goodreads'];
-    storygraph = json['storygraph'];
-    isni = json['isni'];
-    librarything = json['librarything'];
-    amazon = json['amazon'];
-    wikidata = json['wikidata'];
-    imdb = json['imdb'];
-    musicbrainz = json['musicbrainz'];
-    lcNaf = json['lc_naf'];
-    opacSbn = json['opac_sbn'];
-  }
+  RemoteIds.fromJson(Map<String, dynamic> json)
+    : viaf = json['viaf'],
+      goodreads = json['goodreads'],
+      storygraph = json['storygraph'],
+      isni = json['isni'],
+      librarything = json['librarything'],
+      amazon = json['amazon'],
+      wikidata = json['wikidata'],
+      imdb = json['imdb'],
+      musicbrainz = json['musicbrainz'],
+      lcNaf = json['lc_naf'],
+      opacSbn = json['opac_sbn'];
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['viaf'] = viaf;
-    data['goodreads'] = goodreads;
-    data['storygraph'] = storygraph;
-    data['isni'] = isni;
-    data['librarything'] = librarything;
-    data['amazon'] = amazon;
-    data['wikidata'] = wikidata;
-    data['imdb'] = imdb;
-    data['musicbrainz'] = musicbrainz;
-    data['lc_naf'] = lcNaf;
-    data['opac_sbn'] = opacSbn;
-    return data;
+    return {
+      'viaf': viaf,
+      'goodreads': goodreads,
+      'storygraph': storygraph,
+      'isni': isni,
+      'librarything': librarything,
+      'amazon': amazon,
+      'wikidata': wikidata,
+      'imdb': imdb,
+      'musicbrainz': musicbrainz,
+      'lc_naf': lcNaf,
+      'opac_sbn': opacSbn,
+    };
   }
 }
 
@@ -189,20 +174,17 @@ class Links {
 
   Links({this.title, this.url, this.type});
 
-  Links.fromJson(Map<String, dynamic> json) {
-    title = json['title'];
-    url = json['url'];
-    type = json['type'] != null ? Type.fromJson(json['type']) : null;
-  }
+  Links.fromJson(Map<String, dynamic> json)
+    : title = json['title'],
+      url = json['url'],
+      type = json['type'] != null ? Type.fromJson(json['type']) : null;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['title'] = title;
-    data['url'] = url;
-    if (type != null) {
-      data['type'] = type!.toJson();
-    }
-    return data;
+    return {
+      'title': title,
+      'url': url,
+      if (type != null) 'type': type!.toJson(),
+    };
   }
 }
 
@@ -211,13 +193,9 @@ class Type {
 
   Type({this.key});
 
-  Type.fromJson(Map<String, dynamic> json) {
-    key = json['key'];
-  }
+  Type.fromJson(Map<String, dynamic> json) : key = json['key'];
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['key'] = key;
-    return data;
+    return {'key': key};
   }
 }

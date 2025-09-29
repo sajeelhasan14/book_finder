@@ -1,6 +1,6 @@
+import 'package:book_finder/bottom_navigation.dart';
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/screens/auth/signup_screen.dart';
-import 'package:book_finder/screens/home/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -151,7 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const HomeScreen(),
+                                    builder: (context) =>
+                                        const BottomNavigationScreen(),
                                   ),
                                 );
                                 Provider.of<SignupScreenProvider>(

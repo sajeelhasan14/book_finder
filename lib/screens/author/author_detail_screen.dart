@@ -135,7 +135,7 @@ class _AuthorDetailScreenState extends State<AuthorDetailScreen> {
               ),
               Center(
                 child: Text(
-                  "Birth Date: ${authorData.birthDate ?? "Unknown"}",
+                  "Birth Date: ${authorData.birthDate ?? "Not updated on the server"}",
                   style: TextStyle(
                     fontFamily: "Cinzel",
                     fontSize: 14,
@@ -156,7 +156,10 @@ class _AuthorDetailScreenState extends State<AuthorDetailScreen> {
                 ),
               ),
               const SizedBox(height: 5),
-              Text(authorData.bio?.value ?? "No description available."),
+              Text(
+                authorData.bio?.value ??
+                    "Your writing reflects a remarkable blend of creativity, clarity, and depth. The way you organize ideas shows not only strong command of language but also an ability to connect with readers on an emotional level. Each line carries thoughtfulness, and the flow of your expression demonstrates both skill and dedication to the craft. It’s evident that you put genuine effort into shaping your words, and that passion makes your work engaging and impactful. Writers like you remind us of the power of language to inspire, inform, and move people.",
+              ),
             ],
           ),
         ),

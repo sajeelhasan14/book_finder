@@ -51,7 +51,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
 
     final detail = provider.detailData;
     final subjects = detail?.subjects ?? [];
-    final authorid = detail?.authorKeys[0];
+ 
 
     return Scaffold(
       appBar: AppBar(
@@ -137,13 +137,24 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ChipWidget(
-                    text: widget.work.authors[0],
+                    text: widget.work.authors.isNotEmpty
+                        ? widget.work.authors[0]
+                        : "Unknown",
                     onTap: () {
+                      final authorKeys = detail?.authorKeys ?? [];
+                      if (authorKeys.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Author details not available"),
+                          ),
+                        );
+                        return;
+                      }
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              AuthorDetailScreen(authorId: authorid!),
+                          builder: (_) =>
+                              AuthorDetailScreen(authorId: authorKeys.first),
                         ),
                       );
                     },

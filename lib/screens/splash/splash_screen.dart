@@ -1,6 +1,5 @@
 import 'package:book_finder/bottom_navigation.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
-import 'package:book_finder/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';

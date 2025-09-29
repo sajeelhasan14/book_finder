@@ -3,13 +3,11 @@ import 'package:book_finder/models/book_work.dart';
 import 'package:book_finder/models/subject_model.dart';
 import 'package:book_finder/providers/book_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
-
 import 'package:book_finder/screens/author/author_detail_screen.dart';
 import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
 import 'package:book_finder/widgets/chips.dart';
 import 'package:book_finder/widgets/elevated_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -222,6 +220,7 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
                       color: Colors.white,
                     ),
                     onTap: () {
+                      print(widget.work.authors!.first);
                       favProvider.toggleFavorite(
                         key: widget.work.key!.replaceAll(
                           RegExp(r'^/works/'),
@@ -229,7 +228,11 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
                         ),
                         title: widget.work.title ?? "No title available",
                         coverId: widget.work.coverId,
-                        authors: [widget.work.authors.toString()],
+                        authors: widget.work.authors != null
+                            ? widget.work.authors!
+                                  .map((a) => a.name ?? "Unknown Author")
+                                  .toList()
+                            : [],
                         firstPublishYear: widget.work.firstPublishYear,
                       );
                     },

@@ -1,6 +1,7 @@
 import 'package:book_finder/providers/book_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/screens/auth/signup_screen.dart';
+import 'package:book_finder/screens/home/trending_books_screen.dart';
 import 'package:book_finder/widgets/popular_subject_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -143,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Trending Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
                   "Trending",
                   style: TextStyle(
@@ -155,9 +156,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Row(
                   children: [
-                    Text(
-                      "More",
-                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TrendingBookScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "More",
+                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                      ),
                     ),
                     SizedBox(width: 4),
                     Icon(
@@ -172,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
 
             SizedBox(
-              height: 250,
+              height: 255,
               child: bookProvider.isLoadingTrending
                   ? const Center(
                       child: SpinKitThreeBounce(
@@ -220,10 +231,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 }
-
                 // Display favorites
                 return SizedBox(
-                  height: 250,
+                  height: 255,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: favProv.favorites.length,
