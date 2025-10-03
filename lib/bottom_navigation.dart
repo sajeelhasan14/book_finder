@@ -1,8 +1,11 @@
 import 'package:book_finder/providers/bottom_navigation_provider.dart';
 import 'package:book_finder/screens/favorite/favorite_screen.dart';
 import 'package:book_finder/screens/home/home_screen.dart';
+import 'package:book_finder/screens/profile/profile_screen.dart';
+
 import 'package:book_finder/screens/search/search_screen.dart';
 import 'package:book_finder/screens/settings/settings_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +23,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       HomeScreen(),
       SearchScreen(),
       FavoriteScreen(),
-      SettingsScreen(),
+      ProfileScreen(),
     ];
     return Scaffold(
       body: pages[Provider.of<BottomNavigationProvider>(context).currentIndex],
@@ -41,10 +44,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
             icon: Icon(Icons.favorite),
             label: "Favorite",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Settings"),
         ],
       ),
     );

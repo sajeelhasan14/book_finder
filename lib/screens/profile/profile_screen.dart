@@ -1,107 +1,99 @@
-import 'dart:io';
 import 'package:book_finder/providers/theme_provider.dart';
-import 'package:book_finder/services/user_services.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:book_finder/screens/auth/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  String? _photoUrl;
-  String? _name;
-  String? _email;
-
-  final userService = UserService();
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final data = await userService.getUserData();
-      setState(() {
-        _email = user.email;
-        _name = data?['name'] ?? user.displayName ?? "No Name";
-        _photoUrl = data?['photoUrl'];
-      });
-    }
-  }
-
-  Future<void> _pickAndUploadImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      final file = File(picked.path);
-      final url = await userService.uploadProfilePic(file);
-      setState(() {
-        _photoUrl = url;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: _pickAndUploadImage,
-              child: CircleAvatar(
-                radius: 60,
-                backgroundImage: _photoUrl != null
-                    ? NetworkImage(_photoUrl!)
-                    : const AssetImage("assets/default_avatar.png") as ImageProvider,
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 18,
-                    child: const Icon(Icons.camera_alt, size: 20),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'Settings',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // ✅ Profile Card
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    radius: 45,
+                    backgroundImage: AssetImage('images/my.jpeg'),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  Text(
+                    (user?.email ?? "").split('@')[0].toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    user?.email ?? "No Email",
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-            Text(
-              _name ?? "Loading...",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 30),
+
+          // ✅ Settings Options
+          ListTile(
+            leading: Icon(
+              themeProvider.themeMode == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            Text(
-              _email ?? "",
-              style: const TextStyle(color: Colors.grey),
+            title: const Text("Dark Mode"),
+            trailing: Switch(
+              value: themeProvider.themeMode == ThemeMode.dark,
+              onChanged: (value) {
+                themeProvider.setTheme(
+                  value ? ThemeMode.dark : ThemeMode.light,
+                );
+              },
             ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Dark Mode"),
-                Switch(
-                  value: themeProvider.isDarkMode,
-                  onChanged: (value) {
-                    themeProvider.toggleTheme();
-                  },
-                ),
-              ],
-            )
-          ],
-        ),
+          ),
+          const Divider(),
+
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text("Logout", style: TextStyle(color: Colors.red)),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                  (route) => false,
+                );
+              }
+            },
+          ),
+          const Divider(),
+        ],
       ),
     );
   }

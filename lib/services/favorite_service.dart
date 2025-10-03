@@ -35,6 +35,7 @@ class FavoriteService {
       "authors": authors,
       "firstPublishYear": firstPublishYear,
       "createdAt": FieldValue.serverTimestamp(),
+      
     });
   }
 

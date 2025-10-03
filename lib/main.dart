@@ -5,7 +5,6 @@ import 'package:book_finder/providers/bottom_navigation_provider.dart';
 import 'package:book_finder/providers/editions_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/providers/search_provider.dart';
-import 'package:book_finder/providers/settings_provider.dart';
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/providers/subject_provider.dart';
 import 'package:book_finder/providers/theme_provider.dart';
@@ -28,11 +27,12 @@ void main() async {
         ChangeNotifierProvider(create: (_) => EditionsProvider()),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
-        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+
         ChangeNotifierProvider(create: (_) => SignupScreenProvider()),
         ChangeNotifierProvider(create: (_) => SubjectProvider()),
         ChangeNotifierProvider(create: (_) => WorkDetailProvider()),
         ChangeNotifierProvider(create: (_) => BookProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
       ],
       child: const MyApp(),
@@ -50,11 +50,11 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            theme: ThemeData.light(),
-            darkTheme: ThemeData.dark(),
-            themeMode: themeProvider.isDarkMode
-                ? ThemeMode.dark
-                : ThemeMode.light,
+            debugShowCheckedModeBanner: false,
+            themeMode: themeProvider.themeMode,
+                theme: ThemeData.light(),
+
+                darkTheme: ThemeData.dark(),
             home: const SplashScreen(),
           );
         },
