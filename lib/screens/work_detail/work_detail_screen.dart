@@ -1,15 +1,12 @@
 import 'package:book_finder/core/constant.dart';
 import 'package:book_finder/models/book_work.dart';
-
 import 'package:book_finder/providers/book_provider.dart';
 import 'package:book_finder/providers/favorite_provider.dart';
 import 'package:book_finder/screens/author/author_detail_screen.dart';
 import 'package:book_finder/screens/editions/editions_screen.dart';
 import 'package:book_finder/services/open_library_api.dart';
-
 import 'package:book_finder/widgets/chips.dart';
 import 'package:book_finder/widgets/elevated_button.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
