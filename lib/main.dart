@@ -8,6 +8,7 @@ import 'package:book_finder/providers/search_provider.dart';
 import 'package:book_finder/providers/settings_provider.dart';
 import 'package:book_finder/providers/signup_screen_provider.dart';
 import 'package:book_finder/providers/subject_provider.dart';
+import 'package:book_finder/providers/theme_provider.dart';
 import 'package:book_finder/providers/work_detail_provider.dart';
 import 'package:book_finder/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -44,9 +45,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(), // ✅ Always start with SplashScreen
+    return ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            home: const SplashScreen(),
+          );
+        },
+      ),
     );
   }
 }

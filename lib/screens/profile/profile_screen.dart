@@ -1,39 +1,107 @@
+import 'dart:io';
+import 'package:book_finder/providers/theme_provider.dart';
+import 'package:book_finder/services/user_services.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:book_finder/providers/auth_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String? _photoUrl;
+  String? _name;
+  String? _email;
+
+  final userService = UserService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final data = await userService.getUserData();
+      setState(() {
+        _email = user.email;
+        _name = data?['name'] ?? user.displayName ?? "No Name";
+        _photoUrl = data?['photoUrl'];
+      });
+    }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final file = File(picked.path);
+      final url = await userService.uploadProfilePic(file);
+      setState(() {
+        _photoUrl = url;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Profile")),
-      body: Center(
-        child: auth.isSignedIn
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.deepPurple,
-                    child: Text(
-                      auth.user?.email!.substring(0, 1).toUpperCase() ?? "U",
-                      style: const TextStyle(color: Colors.white, fontSize: 24),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: _pickAndUploadImage,
+              child: CircleAvatar(
+                radius: 60,
+                backgroundImage: _photoUrl != null
+                    ? NetworkImage(_photoUrl!)
+                    : const AssetImage("assets/default_avatar.png") as ImageProvider,
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 18,
+                    child: const Icon(Icons.camera_alt, size: 20),
                   ),
-                  const SizedBox(height: 12),
-                  Text("Email: ${auth.user?.email ?? ''}"),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () => auth.signOut(),
-                    child: const Text("Logout"),
-                  ),
-                ],
-              )
-            : const Text("No user logged in"),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _name ?? "Loading...",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              _email ?? "",
+              style: const TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Dark Mode"),
+                Switch(
+                  value: themeProvider.isDarkMode,
+                  onChanged: (value) {
+                    themeProvider.toggleTheme();
+                  },
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
