@@ -27,7 +27,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => EditionsProvider()),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
-
         ChangeNotifierProvider(create: (_) => SignupScreenProvider()),
         ChangeNotifierProvider(create: (_) => SubjectProvider()),
         ChangeNotifierProvider(create: (_) => WorkDetailProvider()),

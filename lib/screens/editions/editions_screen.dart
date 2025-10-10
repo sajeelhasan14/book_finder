@@ -6,12 +6,16 @@ import 'package:book_finder/providers/editions_provider.dart';
 import 'package:book_finder/services/open_library_api.dart';
 
 class EditionsScreen extends StatefulWidget {
-  
-final BookWork work;
+  final BookWork work;
   final String workId;
   final String title;
 
-  const EditionsScreen({super.key, required this.workId, required this.title,required this.work});
+  const EditionsScreen({
+    super.key,
+    required this.workId,
+    required this.title,
+    required this.work,
+  });
 
   @override
   State<EditionsScreen> createState() => _EditionsScreenState();
@@ -103,8 +107,14 @@ class _EditionsScreenState extends State<EditionsScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: InkWell(
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder:(context)=>WorkDetailScreen(work: widget.work)));
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        WorkDetailScreen(work: widget.work),
+                                  ),
+                                );
                               },
                               child: EditionCard(
                                 title: ed.title ?? "Untitled",

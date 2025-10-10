@@ -21,6 +21,7 @@ class SubjectWorkDetailScreen extends StatefulWidget {
 }
 
 class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
+  @override
   void initState() {
     super.initState();
 
@@ -186,7 +187,7 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
                     title: widget.work.title ?? "No Title",
                     coverId: widget.work.coverId,
                     firstPublishYear: widget.work.firstPublishYear,
-                    authors: [widget.work.authors.toString()],
+                    authors: [widget.work.authors!.first.name ?? 'Unknown'],
                   );
                   Navigator.push(
                     context,
@@ -220,7 +221,7 @@ class _SubjectWorkDetailScreenState extends State<SubjectWorkDetailScreen> {
                       color: Colors.white,
                     ),
                     onTap: () {
-                      print(widget.work.authors!.first);
+                      
                       favProvider.toggleFavorite(
                         key: widget.work.key!.replaceAll(
                           RegExp(r'^/works/'),

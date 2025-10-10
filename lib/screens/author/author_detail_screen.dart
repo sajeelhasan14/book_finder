@@ -66,7 +66,7 @@ class _AuthorDetailScreenState extends State<AuthorDetailScreen> {
     }
 
     final photoUrl =
-        (authorData.photos != null && authorData.photos!.isNotEmpty)
+        (authorData.photos.isNotEmpty)
         ? OpenLibraryApi.getAuthorPhoto(
             authorData.photos!.first.toString(),
             size: ApiConstants.coverLarge,
