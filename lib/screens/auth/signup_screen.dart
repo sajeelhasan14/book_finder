@@ -224,6 +224,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   );
                                 })
                                 .onError((error, stackTrace) {
+                                  print(error);
                                   String message = "Signup failed!";
                                   if (error is FirebaseAuthException) {
                                     if (error.code == 'email-already-in-use') {
