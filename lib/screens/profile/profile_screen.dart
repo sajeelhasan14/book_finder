@@ -65,28 +65,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // ✅ Username with edit button
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       isEditing
-                          ? SizedBox(
-                              width: 150,
-                              child: TextField(
-                                controller: nameController,
-                                decoration: InputDecoration(
-                                  hintText: "Enter Name",
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 140),
+                              child: SizedBox(
+                                width: 120,
+                                child: TextField(
+                                  controller: nameController,
+                                  decoration: InputDecoration(
+                                    hintText: "Enter Name",
 
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                   ),
                                 ),
                               ),
                             )
-                          : Text(
-                              userName.isNotEmpty ? userName : "User",
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                          : Padding(
+                              padding: const EdgeInsets.only(left: 140),
+                              child: Text(
+                                userName.isNotEmpty ? userName : "User",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                       const SizedBox(width: 4),
